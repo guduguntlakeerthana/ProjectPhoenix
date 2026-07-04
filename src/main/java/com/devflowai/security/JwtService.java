@@ -1,49 +1,47 @@
 package com.devflowai.security;
 
 import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.stereotype.Service;
 
-import java.security.Key;
+import javax.crypto.SecretKey;
+import java.nio.charset.StandardCharsets;
 import java.util.Date;
 
 @Service
 public class JwtService {
 
-    // Temporary secret key for development
-    private static final Key SECRET_KEY =
-            Keys.secretKeyFor(SignatureAlgorithm.HS256);
+    private static final String SECRET =
+            "devflowai-super-secret-key-for-jwt-authentication-2026";
 
-    // Generate JWT
+    private final SecretKey secretKey =
+            Keys.hmacShaKeyFor(SECRET.getBytes(StandardCharsets.UTF_8));
+
     public String generateToken(String email) {
-
         return Jwts.builder()
                 .subject(email)
                 .issuedAt(new Date())
                 .expiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60))
-                .signWith(SECRET_KEY)
+                .signWith(secretKey)
                 .compact();
     }
 
-    // Extract email from JWT
     public String extractEmail(String token) {
-
         return Jwts.parser()
-                .verifyWith((javax.crypto.SecretKey) SECRET_KEY)
+                .verifyWith(secretKey)
                 .build()
                 .parseSignedClaims(token)
                 .getPayload()
                 .getSubject();
     }
+
     public boolean isTokenValid(String token, String email) {
         return extractEmail(token).equals(email) && !isTokenExpired(token);
     }
 
     private boolean isTokenExpired(String token) {
-
         Date expiration = Jwts.parser()
-                .verifyWith((javax.crypto.SecretKey) SECRET_KEY)
+                .verifyWith(secretKey)
                 .build()
                 .parseSignedClaims(token)
                 .getPayload()
