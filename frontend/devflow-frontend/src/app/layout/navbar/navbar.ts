@@ -1,13 +1,15 @@
 import { Component, OnInit, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Router } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
+import { FormsModule } from '@angular/forms';
 import { AuthService } from '../../services/auth';
 import { NotificationService, NotificationResponse } from '../../services/notification';
+import { GlobalSearchService, GlobalSearchResponse } from '../../services/search';
 
 @Component({
   selector: 'app-navbar',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, FormsModule, RouterLink],
   templateUrl: './navbar.html',
   styleUrl: './navbar.css',
 })
@@ -22,9 +24,15 @@ export class Navbar implements OnInit {
   notifications = signal<NotificationResponse[]>([]);
   unreadCount = computed(() => this.notifications().filter(n => !n.isRead).length);
 
+  // Global Search signals
+  searchQuery = signal('');
+  isSearchOpen = signal(false);
+  searchResults = signal<GlobalSearchResponse>({ projects: [], tasks: [], notes: [], docs: [] });
+
   constructor(
     private authService: AuthService,
     private notificationService: NotificationService,
+    private searchService: GlobalSearchService,
     private router: Router
   ) {}
 
@@ -44,6 +52,31 @@ export class Navbar implements OnInit {
     this.loadNotifications();
   }
 
+  // Global Search logic
+  onSearch(query: string): void {
+    this.searchQuery.set(query);
+    if (!query.trim()) {
+      this.isSearchOpen.set(false);
+      return;
+    }
+
+    this.searchService.search(query).subscribe({
+      next: (res) => {
+        this.searchResults.set(res);
+        this.isSearchOpen.set(true);
+      },
+      error: (err) => {
+        console.error('Search query failed', err);
+      }
+    });
+  }
+
+  closeSearch(): void {
+    this.searchQuery.set('');
+    this.isSearchOpen.set(false);
+  }
+
+  // Notifications logic
   loadNotifications(): void {
     this.notificationService.getNotifications().subscribe({
       next: (data) => {
@@ -58,7 +91,8 @@ export class Navbar implements OnInit {
   toggleNotifications(): void {
     this.isNotificationsOpen.update(v => !v);
     if (this.isNotificationsOpen()) {
-      this.isProfileOpen.set(false); // close profile dropdown
+      this.isProfileOpen.set(false);
+      this.isSearchOpen.set(false);
       this.loadNotifications();
     }
   }
@@ -66,7 +100,8 @@ export class Navbar implements OnInit {
   toggleProfileDropdown(): void {
     this.isProfileOpen.update(v => !v);
     if (this.isProfileOpen()) {
-      this.isNotificationsOpen.set(false); // close notifications dropdown
+      this.isNotificationsOpen.set(false);
+      this.isSearchOpen.set(false);
     }
   }
 

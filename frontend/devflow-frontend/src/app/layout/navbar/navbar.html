@@ -3,6 +3,62 @@
     <h2 class="page-title">Workspace</h2>
   </div>
 
+  <!-- Central Search Bar -->
+  <div class="nav-middle">
+    <div class="nav-search-bar">
+      <svg class="search-bar-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+      <input 
+        type="text" 
+        [ngModel]="searchQuery()" 
+        (ngModelChange)="onSearch($event)" 
+        placeholder="Search projects, tasks, notes, docs..." 
+      />
+      
+      <!-- Search Overlay Dropdown -->
+      <div class="search-results-dropdown" *ngIf="isSearchOpen() && searchQuery().trim() !== ''">
+        
+        <!-- Projects Category -->
+        <div class="search-category" *ngIf="searchResults().projects.length > 0">
+          <h5>Projects</h5>
+          <div class="search-item" *ngFor="let p of searchResults().projects" routerLink="/projects" (click)="closeSearch()">
+            <span class="search-item-title">{{ p.title }}</span>
+          </div>
+        </div>
+        
+        <!-- Tasks Category -->
+        <div class="search-category" *ngIf="searchResults().tasks.length > 0">
+          <h5>Tasks</h5>
+          <div class="search-item" *ngFor="let t of searchResults().tasks" routerLink="/tasks" (click)="closeSearch()">
+            <span class="search-item-title">{{ t.title }}</span>
+            <span class="search-item-subtitle">{{ t.projectTitle }} &bull; {{ t.status }}</span>
+          </div>
+        </div>
+
+        <!-- Notes Category -->
+        <div class="search-category" *ngIf="searchResults().notes.length > 0">
+          <h5>Notes</h5>
+          <div class="search-item" *ngFor="let n of searchResults().notes" routerLink="/notes" (click)="closeSearch()">
+            <span class="search-item-title">{{ n.title }}</span>
+          </div>
+        </div>
+
+        <!-- Docs Category -->
+        <div class="search-category" *ngIf="searchResults().docs.length > 0">
+          <h5>Docs</h5>
+          <div class="search-item" *ngFor="let d of searchResults().docs" routerLink="/docs" (click)="closeSearch()">
+            <span class="search-item-title">{{ d.title }}</span>
+            <span class="search-item-subtitle">{{ d.projectTitle }} &bull; {{ d.category }}</span>
+          </div>
+        </div>
+
+        <!-- Empty Results -->
+        <div class="empty-search" *ngIf="searchResults().projects.length === 0 && searchResults().tasks.length === 0 && searchResults().notes.length === 0 && searchResults().docs.length === 0">
+          <p>No results found for "{{ searchQuery() }}"</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <div class="nav-right">
     <!-- Notification Icon and Dropdown Toggle -->
     <div class="notification-menu">
