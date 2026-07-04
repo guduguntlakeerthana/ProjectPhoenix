@@ -14,8 +14,22 @@ export class Projects implements OnInit {
 
   projects = signal<ProjectResponse[]>([]);
   isLoading = signal(true);
+
+  // Filter & Pagination signals
   searchQuery = signal('');
   statusFilter = signal('ALL');
+  pageNumber = signal(0);
+  pageSize = signal(6); // 6 cards fits nicely on desktop grids
+  totalElements = signal(0);
+  totalPages = signal(0);
+  sortBy = signal('createdAt');
+  sortDir = signal('desc');
+
+  // Statistics signals
+  totalCount = signal(0);
+  completedCount = signal(0);
+  inProgressCount = signal(0);
+  pendingCount = signal(0);
 
   // Modal signals
   isModalOpen = signal(false);
@@ -37,13 +51,23 @@ export class Projects implements OnInit {
 
   ngOnInit(): void {
     this.loadProjects();
+    this.loadStats();
   }
 
   loadProjects(): void {
     this.isLoading.set(true);
-    this.projectService.getProjects().subscribe({
-      next: (data) => {
-        this.projects.set(data);
+    this.projectService.getProjects(
+      this.searchQuery(),
+      this.statusFilter(),
+      this.pageNumber(),
+      this.pageSize(),
+      this.sortBy(),
+      this.sortDir()
+    ).subscribe({
+      next: (response) => {
+        this.projects.set(response.content);
+        this.totalElements.set(response.totalElements);
+        this.totalPages.set(response.totalPages);
         this.isLoading.set(false);
       },
       error: (err) => {
@@ -53,35 +77,74 @@ export class Projects implements OnInit {
     });
   }
 
-  // Computed signal for filtered list of projects
-  filteredProjects = computed(() => {
-    let list = this.projects();
+  loadStats(): void {
+    this.projectService.getProjectStats().subscribe({
+      next: (stats) => {
+        this.totalCount.set(stats.totalProjects);
+        this.completedCount.set(stats.completedProjects);
+        this.inProgressCount.set(stats.inProgressProjects);
+        this.pendingCount.set(stats.pendingProjects);
+      },
+      error: (err) => {
+        console.error('Failed to load stats', err);
+      }
+    });
+  }
 
-    // Filter by search query
-    const query = this.searchQuery().trim().toLowerCase();
-    if (query) {
-      list = list.filter(p => 
-        p.title.toLowerCase().includes(query) || 
-        (p.description && p.description.toLowerCase().includes(query)) ||
-        (p.techStack && p.techStack.toLowerCase().includes(query))
-      );
+  onSearchChange(query: string): void {
+    this.searchQuery.set(query);
+    this.pageNumber.set(0);
+    this.loadProjects();
+  }
+
+  onFilterChange(status: string): void {
+    this.statusFilter.set(status);
+    this.pageNumber.set(0);
+    this.loadProjects();
+  }
+
+  onSortChange(field: string): void {
+    if (this.sortBy() === field) {
+      this.sortDir.set(this.sortDir() === 'asc' ? 'desc' : 'asc');
+    } else {
+      this.sortBy.set(field);
+      this.sortDir.set('desc');
     }
+    this.pageNumber.set(0);
+    this.loadProjects();
+  }
 
-    // Filter by status
-    const status = this.statusFilter();
-    if (status !== 'ALL') {
-      list = list.filter(p => p.status === status);
+  onSortParamChange(sortParam: string): void {
+    const parts = sortParam.split(',');
+    this.sortBy.set(parts[0]);
+    this.sortDir.set(parts[1]);
+    this.pageNumber.set(0);
+    this.loadProjects();
+  }
+
+  // Pagination Actions
+  nextPage(): void {
+    if (this.pageNumber() < this.totalPages() - 1) {
+      this.pageNumber.update(p => p + 1);
+      this.loadProjects();
     }
+  }
 
-    return list;
-  });
+  prevPage(): void {
+    if (this.pageNumber() > 0) {
+      this.pageNumber.update(p => p - 1);
+      this.loadProjects();
+    }
+  }
 
-  // Project statistics computed signals
-  totalProjects = computed(() => this.projects().length);
-  completedProjects = computed(() => this.projects().filter(p => p.status === 'COMPLETED').length);
-  inProgressProjects = computed(() => this.projects().filter(p => p.status === 'IN_PROGRESS').length);
-  pendingProjects = computed(() => this.projects().filter(p => p.status === 'PENDING').length);
+  goToPage(p: number): void {
+    if (p >= 0 && p < this.totalPages()) {
+      this.pageNumber.set(p);
+      this.loadProjects();
+    }
+  }
 
+  // Modal Actions
   openCreateModal(): void {
     this.isEditing.set(false);
     this.selectedProjectId.set(null);
@@ -146,6 +209,7 @@ export class Projects implements OnInit {
         this.projectService.updateProject(id, projectData).subscribe({
           next: () => {
             this.loadProjects();
+            this.loadStats();
             this.closeModal();
           },
           error: (err) => {
@@ -158,11 +222,12 @@ export class Projects implements OnInit {
       this.projectService.createProject(projectData).subscribe({
         next: () => {
           this.loadProjects();
+          this.loadStats();
           this.closeModal();
         },
         error: (err) => {
           console.error('Failed to create project', err);
-          this.formError.set(err.error?.message || 'Error occurred creating project');
+          this.formError.set(err.error?.message || 'Error occurred creating project. Verify that date ranges are correct.');
         }
       });
     }
@@ -173,6 +238,7 @@ export class Projects implements OnInit {
       this.projectService.deleteProject(id).subscribe({
         next: () => {
           this.loadProjects();
+          this.loadStats();
         },
         error: (err) => {
           console.error('Failed to delete project', err);

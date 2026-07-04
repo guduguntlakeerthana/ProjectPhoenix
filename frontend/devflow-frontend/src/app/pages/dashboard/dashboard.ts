@@ -1,7 +1,7 @@
 import { Component, OnInit, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
-import { ProjectService, ProjectResponse } from '../../services/project';
+import { ProjectService, ProjectResponse, ProjectStatsResponse } from '../../services/project';
 
 @Component({
   selector: 'app-dashboard',
@@ -12,50 +12,47 @@ import { ProjectService, ProjectResponse } from '../../services/project';
 })
 export class Dashboard implements OnInit {
 
-  projects = signal<ProjectResponse[]>([]);
+  recentProjects = signal<ProjectResponse[]>([]);
   isLoading = signal(true);
+
+  // Statistics signals
+  totalProjects = signal(0);
+  completedProjects = signal(0);
+  inProgressProjects = signal(0);
+  pendingProjects = signal(0);
 
   constructor(private projectService: ProjectService) {}
 
   ngOnInit(): void {
-    this.loadProjects();
+    this.loadDashboardData();
   }
 
-  loadProjects() {
+  loadDashboardData(): void {
     this.isLoading.set(true);
-    this.projectService.getProjects().subscribe({
-      next: (data) => {
-        this.projects.set(data);
+
+    // Fetch stats
+    this.projectService.getProjectStats().subscribe({
+      next: (stats: ProjectStatsResponse) => {
+        this.totalProjects.set(stats.totalProjects);
+        this.completedProjects.set(stats.completedProjects);
+        this.inProgressProjects.set(stats.inProgressProjects);
+        this.pendingProjects.set(stats.pendingProjects);
+      },
+      error: (err) => {
+        console.error('Failed to load project stats', err);
+      }
+    });
+
+    // Fetch 3 most recent projects
+    this.projectService.getProjects('', 'ALL', 0, 3, 'createdAt', 'desc').subscribe({
+      next: (response) => {
+        this.recentProjects.set(response.content);
         this.isLoading.set(false);
       },
       error: (err) => {
-        console.error('Failed to load projects', err);
+        console.error('Failed to load recent projects', err);
         this.isLoading.set(false);
       }
     });
   }
-
-  totalProjects = computed(() => this.projects().length);
-  
-  completedProjects = computed(() => 
-    this.projects().filter(p => p.status === 'COMPLETED').length
-  );
-  
-  inProgressProjects = computed(() => 
-    this.projects().filter(p => p.status === 'IN_PROGRESS').length
-  );
-  
-  pendingProjects = computed(() => 
-    this.projects().filter(p => p.status === 'PENDING').length
-  );
-
-  recentProjects = computed(() => {
-    return [...this.projects()]
-      .sort((a, b) => {
-        const dateA = a.createdAt ? new Date(a.createdAt).getTime() : 0;
-        const dateB = b.createdAt ? new Date(b.createdAt).getTime() : 0;
-        return dateB - dateA;
-      })
-      .slice(0, 3);
-  });
 }

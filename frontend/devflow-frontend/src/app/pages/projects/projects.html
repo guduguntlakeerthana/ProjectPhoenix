@@ -14,19 +14,19 @@
   <!-- Quick Stats row -->
   <div class="projects-stats-row">
     <div class="stat-mini-card">
-      <span class="stat-num text-total">{{ totalProjects() }}</span>
+      <span class="stat-num text-total">{{ totalCount() }}</span>
       <span class="stat-name">Total</span>
     </div>
     <div class="stat-mini-card">
-      <span class="stat-num text-progress">{{ inProgressProjects() }}</span>
+      <span class="stat-num text-progress">{{ inProgressCount() }}</span>
       <span class="stat-name">In Progress</span>
     </div>
     <div class="stat-mini-card">
-      <span class="stat-num text-completed">{{ completedProjects() }}</span>
+      <span class="stat-num text-completed">{{ completedCount() }}</span>
       <span class="stat-name">Completed</span>
     </div>
     <div class="stat-mini-card">
-      <span class="stat-num text-pending">{{ pendingProjects() }}</span>
+      <span class="stat-num text-pending">{{ pendingCount() }}</span>
       <span class="stat-name">Pending</span>
     </div>
   </div>
@@ -38,7 +38,7 @@
       <input 
         type="text" 
         [ngModel]="searchQuery()" 
-        (ngModelChange)="searchQuery.set($event)" 
+        (ngModelChange)="onSearchChange($event)" 
         placeholder="Search projects by name, description, or stack..." 
       />
     </div>
@@ -46,11 +46,22 @@
     <div class="filter-select-container">
       <select 
         [ngModel]="statusFilter()" 
-        (ngModelChange)="statusFilter.set($event)">
+        (ngModelChange)="onFilterChange($event)">
         <option value="ALL">All Statuses</option>
         <option value="PENDING">Pending</option>
         <option value="IN_PROGRESS">In Progress</option>
         <option value="COMPLETED">Completed</option>
+      </select>
+    </div>
+
+    <div class="filter-select-container">
+      <select 
+        [ngModel]="sortBy() + ',' + sortDir()" 
+        (ngModelChange)="onSortParamChange($event)">
+        <option value="createdAt,desc">Newest First</option>
+        <option value="createdAt,asc">Oldest First</option>
+        <option value="title,asc">Alphabetical (A-Z)</option>
+        <option value="title,desc">Alphabetical (Z-A)</option>
       </select>
     </div>
   </div>
@@ -62,22 +73,22 @@
   </div>
 
   <!-- Empty State -->
-  <div class="card empty-state" *ngIf="!isLoading() && filteredProjects().length === 0">
+  <div class="card empty-state" *ngIf="!isLoading() && projects().length === 0">
     <div class="empty-icon">
       <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path></svg>
     </div>
     <h4>No Projects Found</h4>
-    <p *ngIf="projects().length > 0">No projects match the current search filters. Try resetting your search terms.</p>
-    <p *ngIf="projects().length === 0">Get started by creating your very first development project.</p>
-    <button class="btn btn-primary" *ngIf="projects().length === 0" (click)="openCreateModal()">
+    <p *ngIf="totalCount() > 0">No projects match the current search filters. Try resetting your search terms.</p>
+    <p *ngIf="totalCount() === 0">Get started by creating your very first development project.</p>
+    <button class="btn btn-primary" *ngIf="totalCount() === 0" (click)="openCreateModal()">
       Create Project
     </button>
   </div>
 
   <!-- Projects Grid -->
-  <div class="projects-grid" *ngIf="!isLoading() && filteredProjects().length > 0">
+  <div class="projects-grid" *ngIf="!isLoading() && projects().length > 0">
     <div class="card project-card card-hover" 
-         *ngFor="let project of filteredProjects()"
+         *ngFor="let project of projects()"
          [ngClass]="{
            'border-pending': project.status === 'PENDING',
            'border-progress': project.status === 'IN_PROGRESS',
@@ -133,6 +144,19 @@
         </div>
       </div>
     </div>
+  </div>
+
+  <!-- Pagination Controls -->
+  <div class="pagination-container" *ngIf="!isLoading() && totalPages() > 1">
+    <button class="btn btn-secondary btn-pagination" [disabled]="pageNumber() === 0" (click)="prevPage()">
+      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"></polyline></svg>
+      Prev
+    </button>
+    <span class="pagination-info">Page {{ pageNumber() + 1 }} of {{ totalPages() }}</span>
+    <button class="btn btn-secondary btn-pagination" [disabled]="pageNumber() >= totalPages() - 1" (click)="nextPage()">
+      Next
+      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"></polyline></svg>
+    </button>
   </div>
 
   <!-- Form Modal Dialog -->

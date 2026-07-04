@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 
 export interface ProjectRequest {
@@ -27,6 +27,24 @@ export interface ProjectResponse {
   updatedAt: string;
 }
 
+export interface PaginatedResponse<T> {
+  content: T[];
+  totalElements: number;
+  totalPages: number;
+  size: number;
+  number: number;
+  first: boolean;
+  last: boolean;
+  empty: boolean;
+}
+
+export interface ProjectStatsResponse {
+  totalProjects: number;
+  completedProjects: number;
+  inProgressProjects: number;
+  pendingProjects: number;
+}
+
 @Injectable({
   providedIn: 'root'
 })
@@ -36,8 +54,32 @@ export class ProjectService {
 
   constructor(private http: HttpClient) {}
 
-  getProjects(): Observable<ProjectResponse[]> {
-    return this.http.get<ProjectResponse[]>(this.baseUrl);
+  getProjects(
+    search?: string,
+    status?: string,
+    page: number = 0,
+    size: number = 10,
+    sortBy: string = 'createdAt',
+    direction: string = 'desc'
+  ): Observable<PaginatedResponse<ProjectResponse>> {
+    let params = new HttpParams()
+      .set('page', page.toString())
+      .set('size', size.toString())
+      .set('sortBy', sortBy)
+      .set('direction', direction);
+
+    if (search) {
+      params = params.set('search', search);
+    }
+    if (status && status !== 'ALL') {
+      params = params.set('status', status);
+    }
+
+    return this.http.get<PaginatedResponse<ProjectResponse>>(this.baseUrl, { params });
+  }
+
+  getProjectStats(): Observable<ProjectStatsResponse> {
+    return this.http.get<ProjectStatsResponse>(`${this.baseUrl}/stats`);
   }
 
   createProject(data: ProjectRequest): Observable<ProjectResponse> {

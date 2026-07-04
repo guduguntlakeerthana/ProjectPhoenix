@@ -67,7 +67,7 @@
         </div>
 
         <!-- Empty State -->
-        <div class="card empty-state" *ngIf="projects().length === 0">
+        <div class="card empty-state" *ngIf="totalProjects() === 0">
           <div class="empty-icon">
             <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path></svg>
           </div>
@@ -80,7 +80,7 @@
         </div>
 
         <!-- Recent Projects List -->
-        <div class="recent-list" *ngIf="projects().length > 0">
+        <div class="recent-list" *ngIf="totalProjects() > 0">
           <div class="card project-item card-hover" *ngFor="let project of recentProjects()" [routerLink]="['/projects']">
             <div class="project-item-header">
               <h4 class="project-title">{{ project.title }}</h4>

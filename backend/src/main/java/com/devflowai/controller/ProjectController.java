@@ -2,13 +2,13 @@ package com.devflowai.controller;
 
 import com.devflowai.dto.request.ProjectRequest;
 import com.devflowai.dto.response.ProjectResponse;
+import com.devflowai.dto.response.ProjectStatsResponse;
 import com.devflowai.service.ProjectService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/api/projects")
@@ -27,8 +27,23 @@ public class ProjectController {
     }
 
     @GetMapping
-    public List<ProjectResponse> getMyProjects(Authentication authentication) {
-        return projectService.getMyProjects(authentication.getName());
+    public Page<ProjectResponse> getMyProjects(
+            @RequestParam(required = false) String search,
+            @RequestParam(required = false) String status,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(defaultValue = "createdAt") String sortBy,
+            @RequestParam(defaultValue = "desc") String direction,
+            Authentication authentication
+    ) {
+        return projectService.getMyProjectsPaginated(
+                authentication.getName(), search, status, page, size, sortBy, direction
+        );
+    }
+
+    @GetMapping("/stats")
+    public ProjectStatsResponse getProjectStats(Authentication authentication) {
+        return projectService.getProjectStats(authentication.getName());
     }
 
     @GetMapping("/{id}")

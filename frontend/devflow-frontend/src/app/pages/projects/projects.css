@@ -371,3 +371,30 @@
   padding-top: 1.25rem;
   border-top: 1px solid var(--border-color);
 }
+
+/* Pagination Styling */
+.pagination-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1.5rem;
+  margin-top: 2.5rem;
+  padding: 1.25rem 0 0 0;
+  border-top: 1px solid var(--border-color);
+}
+
+.btn-pagination {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  font-size: 0.9rem;
+  height: 36px;
+}
+
+.pagination-info {
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+  font-weight: 500;
+}

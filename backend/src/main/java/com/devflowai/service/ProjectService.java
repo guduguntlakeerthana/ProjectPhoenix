@@ -2,11 +2,16 @@ package com.devflowai.service;
 
 import com.devflowai.dto.request.ProjectRequest;
 import com.devflowai.dto.response.ProjectResponse;
+import com.devflowai.dto.response.ProjectStatsResponse;
 import com.devflowai.entity.Project;
 import com.devflowai.entity.User;
 import com.devflowai.repository.ProjectRepository;
 import com.devflowai.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -42,8 +47,17 @@ public class ProjectService {
                 .build();
     }
 
+    private void validateDates(ProjectRequest request) {
+        if (request.getStartDate() != null && request.getEndDate() != null) {
+            if (request.getStartDate().isAfter(request.getEndDate())) {
+                throw new IllegalArgumentException("Start date cannot be after end date");
+            }
+        }
+    }
+
     public ProjectResponse createProject(ProjectRequest request, String email) {
         User user = getUserByEmail(email);
+        validateDates(request);
 
         Project project = Project.builder()
                 .title(request.getTitle())
@@ -71,6 +85,46 @@ public class ProjectService {
                 .toList();
     }
 
+    public Page<ProjectResponse> getMyProjectsPaginated(
+            String email,
+            String search,
+            String status,
+            int page,
+            int size,
+            String sortBy,
+            String direction
+    ) {
+        User user = getUserByEmail(email);
+
+        // Map client filter 'ALL' to null
+        String statusFilter = (status == null || "ALL".equalsIgnoreCase(status)) ? null : status;
+        String searchQuery = (search == null || search.trim().isEmpty()) ? null : search.trim();
+
+        // Sort configuration
+        Sort sort = Sort.by(Sort.Direction.fromString(direction), sortBy);
+        Pageable pageable = PageRequest.of(page, size, sort);
+
+        return projectRepository.findByUserAndFilters(user, statusFilter, searchQuery, pageable)
+                .map(this::mapToResponse);
+    }
+
+    public ProjectStatsResponse getProjectStats(String email) {
+        User user = getUserByEmail(email);
+        List<Project> projects = projectRepository.findByUser(user);
+
+        long total = projects.size();
+        long completed = projects.stream().filter(p -> "COMPLETED".equals(p.getStatus())).count();
+        long inProgress = projects.stream().filter(p -> "IN_PROGRESS".equals(p.getStatus())).count();
+        long pending = projects.stream().filter(p -> "PENDING".equals(p.getStatus())).count();
+
+        return ProjectStatsResponse.builder()
+                .totalProjects(total)
+                .completedProjects(completed)
+                .inProgressProjects(inProgress)
+                .pendingProjects(pending)
+                .build();
+    }
+
     public ProjectResponse getProjectById(Long id, String email) {
         User user = getUserByEmail(email);
 
@@ -82,6 +136,7 @@ public class ProjectService {
 
     public ProjectResponse updateProject(Long id, ProjectRequest request, String email) {
         User user = getUserByEmail(email);
+        validateDates(request);
 
         Project project = projectRepository.findByIdAndUser(id, user)
                 .orElseThrow(() -> new RuntimeException("Project not found"));
