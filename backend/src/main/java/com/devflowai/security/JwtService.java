@@ -11,11 +11,11 @@ import java.util.Date;
 @Service
 public class JwtService {
 
-    private static final String SECRET =
-            "devflowai-super-secret-key-for-jwt-authentication-2026";
+    private final SecretKey secretKey;
 
-    private final SecretKey secretKey =
-            Keys.hmacShaKeyFor(SECRET.getBytes(StandardCharsets.UTF_8));
+    public JwtService(@org.springframework.beans.factory.annotation.Value("${jwt.secret}") String secret) {
+        this.secretKey = Keys.hmacShaKeyFor(secret.getBytes(StandardCharsets.UTF_8));
+    }
 
     public String generateToken(String email) {
         return Jwts.builder()
