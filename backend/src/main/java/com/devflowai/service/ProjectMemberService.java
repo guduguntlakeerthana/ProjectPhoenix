@@ -20,12 +20,14 @@ public class ProjectMemberService {
     private final ProjectMemberRepository projectMemberRepository;
     private final ProjectRepository projectRepository;
     private final UserRepository userRepository;
+    private final NotificationService notificationService;
 
     @Autowired
-    public ProjectMemberService(ProjectMemberRepository projectMemberRepository, ProjectRepository projectRepository, UserRepository userRepository) {
+    public ProjectMemberService(ProjectMemberRepository projectMemberRepository, ProjectRepository projectRepository, UserRepository userRepository, NotificationService notificationService) {
         this.projectMemberRepository = projectMemberRepository;
         this.projectRepository = projectRepository;
         this.userRepository = userRepository;
+        this.notificationService = notificationService;
     }
 
     private User getUserByEmail(String email) {
@@ -54,9 +56,8 @@ public class ProjectMemberService {
         Project project = getProjectByIdAndOwner(request.getProjectId(), ownerEmail);
 
         // Check if member user exists in registration database (standard validation)
-        if (!userRepository.findByEmail(request.getEmail()).isPresent()) {
-            throw new RuntimeException("Invited user does not have a DevFlow AI account yet");
-        }
+        User invitedUser = userRepository.findByEmail(request.getEmail())
+                .orElseThrow(() -> new RuntimeException("Invited user does not have a DevFlow AI account yet"));
 
         // Prevent inviting the owner
         if (project.getUser().getEmail().equalsIgnoreCase(request.getEmail())) {
@@ -75,7 +76,9 @@ public class ProjectMemberService {
                 .project(project)
                 .build();
 
-        return mapToResponse(projectMemberRepository.save(member));
+        ProjectMemberResponse response = mapToResponse(projectMemberRepository.save(member));
+        notificationService.createNotification(invitedUser, "You have been invited to collaborate on project: " + project.getTitle());
+        return response;
     }
 
     public List<ProjectMemberResponse> getProjectMembers(Long projectId, String ownerEmail) {
