@@ -29,3 +29,10 @@ All notable changes to this project will be documented in this file.
 - Added a statistics endpoint `/api/projects/stats` returning aggregated count metrics of projects.
 - Integrated paginator footer controls and sort sorting dropdown to projects grid page in Angular.
 - Connected dashboard widgets directly to backend statistics API.
+
+## [1.2.0] - 2026-07-04
+### Added
+- Created `Task` database entity, mapping foreign key relationships to users and projects.
+- Implemented Task REST API endpoints (`POST`, `GET`, `PUT`, `DELETE`).
+- Built a developer-themed Task Board listing, editing, and deleting sprint tasks.
+- Added client-side Signal filters for status, priority, and project scope.
