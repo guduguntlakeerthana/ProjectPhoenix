@@ -16,7 +16,8 @@ export const routes: Routes = [
       { path: 'dashboard', component: Dashboard },
       { path: 'projects', component: Projects },
       { path: 'tasks', loadComponent: () => import('./pages/tasks/tasks').then(m => m.Tasks) },
-      { path: 'notes', loadComponent: () => import('./pages/notes/notes').then(m => m.Notes) }
+      { path: 'notes', loadComponent: () => import('./pages/notes/notes').then(m => m.Notes) },
+      { path: 'docs', loadComponent: () => import('./pages/docs/docs').then(m => m.Docs) }
     ]
   },
   { path: '**', redirectTo: 'login' }
