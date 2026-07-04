@@ -1,0 +1,46 @@
+.layout-container {
+  display: flex;
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+  background-color: var(--bg-primary);
+}
+
+.layout-sidebar {
+  width: var(--sidebar-width);
+  height: 100%;
+  flex-shrink: 0;
+  border-right: 1px solid var(--border-color);
+  background-color: var(--bg-secondary);
+}
+
+.layout-main {
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+  height: 100%;
+  overflow: hidden;
+}
+
+.layout-navbar {
+  height: var(--navbar-height);
+  width: 100%;
+  flex-shrink: 0;
+  border-bottom: 1px solid var(--border-color);
+  z-index: 10;
+}
+
+.layout-content {
+  flex-grow: 1;
+  padding: 2rem;
+  overflow-y: auto;
+  overflow-x: hidden;
+  position: relative;
+  background-color: var(--bg-primary);
+}
+
+@media (max-width: 768px) {
+  .layout-sidebar {
+    display: none; /* In subsequent features, we can add a mobile drawer toggle if needed */
+  }
+}

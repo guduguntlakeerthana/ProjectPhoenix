@@ -1,0 +1,28 @@
+# ProposalPilot AI
+
+## Vision
+ProposalPilot AI helps freelancers, agencies, consultants, and small businesses create professional proposals, quotations, and invoices in minutes.
+
+## Goal
+Reduce document creation time from hours to minutes.
+
+## Version 1 Features
+- User Login
+- Client Management
+- Proposal Generator
+- Quotation Generator
+- PDF Export
+
+## Tech Stack
+- Angular
+- Spring Boot
+- PostgreSQL
+- JWT
+- Docker
+
+## Future Features
+- AI Proposal Writing
+- AI Cost Estimation
+- E-Signature
+- Payment Integration
+- Client Portal

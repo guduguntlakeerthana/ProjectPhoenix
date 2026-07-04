@@ -1,0 +1,31 @@
+# DevFlow AI
+
+## Vision
+Build one platform where developers can manage projects, resumes, portfolios, interview preparation, and AI-powered productivity tools.
+
+## Target Users
+- Students
+- Freshers
+- Developers
+- Freelancers
+
+## Core Modules
+1. Authentication
+2. Dashboard
+3. Project Manager
+4. Resume Builder
+5. Portfolio Builder
+6. Interview Tracker
+7. Coding Tracker
+8. AI Assistant
+
+## Tech Stack
+Frontend: Angular
+Backend: Spring Boot
+Database: PostgreSQL
+Security: JWT
+Deployment: Docker
+AI: Python + LLM APIs (later)
+
+## MVP Goal
+Release the first usable version with authentication, dashboard, and project management.

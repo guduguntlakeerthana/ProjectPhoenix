@@ -1,0 +1,30 @@
+<div class="login-page">
+  <div class="login-card">
+    <h1>DevFlow AI</h1>
+    <p class="subtitle">Login to your developer workspace</p>
+
+    <form (ngSubmit)="login()">
+      <label>Email</label>
+      <input
+        type="email"
+        name="email"
+        [(ngModel)]="email"
+        placeholder="Enter your email"
+        required
+      />
+
+      <label>Password</label>
+      <input
+        type="password"
+        name="password"
+        [(ngModel)]="password"
+        placeholder="Enter your password"
+        required
+      />
+
+      <p class="error" *ngIf="error">{{ error }}</p>
+
+      <button type="submit">Login</button>
+    </form>
+  </div>
+</div>

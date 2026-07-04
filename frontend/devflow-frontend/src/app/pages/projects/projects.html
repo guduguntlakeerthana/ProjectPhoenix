@@ -1,0 +1,271 @@
+<div class="projects-container">
+  <!-- Header & Stats -->
+  <header class="projects-header">
+    <div class="header-left">
+      <h1>Projects Workspace</h1>
+      <p class="subtitle">Organize, customize, and track all your active software development projects.</p>
+    </div>
+    <button class="btn btn-primary" (click)="openCreateModal()">
+      <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+      New Project
+    </button>
+  </header>
+
+  <!-- Quick Stats row -->
+  <div class="projects-stats-row">
+    <div class="stat-mini-card">
+      <span class="stat-num text-total">{{ totalProjects() }}</span>
+      <span class="stat-name">Total</span>
+    </div>
+    <div class="stat-mini-card">
+      <span class="stat-num text-progress">{{ inProgressProjects() }}</span>
+      <span class="stat-name">In Progress</span>
+    </div>
+    <div class="stat-mini-card">
+      <span class="stat-num text-completed">{{ completedProjects() }}</span>
+      <span class="stat-name">Completed</span>
+    </div>
+    <div class="stat-mini-card">
+      <span class="stat-num text-pending">{{ pendingProjects() }}</span>
+      <span class="stat-name">Pending</span>
+    </div>
+  </div>
+
+  <!-- Filter Controls -->
+  <div class="card filter-bar">
+    <div class="filter-search-container">
+      <svg class="search-icon" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+      <input 
+        type="text" 
+        [ngModel]="searchQuery()" 
+        (ngModelChange)="searchQuery.set($event)" 
+        placeholder="Search projects by name, description, or stack..." 
+      />
+    </div>
+    
+    <div class="filter-select-container">
+      <select 
+        [ngModel]="statusFilter()" 
+        (ngModelChange)="statusFilter.set($event)">
+        <option value="ALL">All Statuses</option>
+        <option value="PENDING">Pending</option>
+        <option value="IN_PROGRESS">In Progress</option>
+        <option value="COMPLETED">Completed</option>
+      </select>
+    </div>
+  </div>
+
+  <!-- Loading State -->
+  <div class="loading-overlay" *ngIf="isLoading()">
+    <div class="spinner"></div>
+    <p>Loading projects...</p>
+  </div>
+
+  <!-- Empty State -->
+  <div class="card empty-state" *ngIf="!isLoading() && filteredProjects().length === 0">
+    <div class="empty-icon">
+      <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path></svg>
+    </div>
+    <h4>No Projects Found</h4>
+    <p *ngIf="projects().length > 0">No projects match the current search filters. Try resetting your search terms.</p>
+    <p *ngIf="projects().length === 0">Get started by creating your very first development project.</p>
+    <button class="btn btn-primary" *ngIf="projects().length === 0" (click)="openCreateModal()">
+      Create Project
+    </button>
+  </div>
+
+  <!-- Projects Grid -->
+  <div class="projects-grid" *ngIf="!isLoading() && filteredProjects().length > 0">
+    <div class="card project-card card-hover" 
+         *ngFor="let project of filteredProjects()"
+         [ngClass]="{
+           'border-pending': project.status === 'PENDING',
+           'border-progress': project.status === 'IN_PROGRESS',
+           'border-completed': project.status === 'COMPLETED'
+         }">
+      
+      <div class="project-header">
+        <h3 class="project-title">{{ project.title }}</h3>
+        <span class="badge" [ngClass]="{
+          'badge-pending': project.status === 'PENDING',
+          'badge-inprogress': project.status === 'IN_PROGRESS',
+          'badge-completed': project.status === 'COMPLETED'
+        }">{{ project.status }}</span>
+      </div>
+
+      <p class="project-description">{{ project.description || 'No description provided.' }}</p>
+
+      <!-- Date timeline -->
+      <div class="project-dates" *ngIf="project.startDate || project.endDate">
+        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
+        <span>
+          {{ project.startDate ? (project.startDate | date:'mediumDate') : 'TBD' }} 
+          &ndash; 
+          {{ project.endDate ? (project.endDate | date:'mediumDate') : 'Ongoing' }}
+        </span>
+      </div>
+
+      <!-- Tech Stack Badges -->
+      <div class="project-tech-tags" *ngIf="project.techStack">
+        <span class="tech-tag" *ngFor="let tech of (project.techStack || '').split(',')">
+          {{ tech.trim() }}
+        </span>
+      </div>
+
+      <!-- Links & Actions -->
+      <div class="project-footer">
+        <div class="project-links">
+          <a *ngIf="project.githubLink" [href]="project.githubLink" target="_blank" class="link-icon" title="View Source on GitHub">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"></path></svg>
+          </a>
+          <a *ngIf="project.liveDemoLink" [href]="project.liveDemoLink" target="_blank" class="link-icon" title="View Live Demo">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
+          </a>
+        </div>
+
+        <div class="project-actions">
+          <button class="btn-icon" (click)="openEditModal(project)" title="Edit Project">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 1 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
+          </button>
+          <button class="btn-icon btn-action-danger" (click)="deleteProject(project.id)" title="Delete Project">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line></svg>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Form Modal Dialog -->
+  <div class="modal-backdrop" *ngIf="isModalOpen()">
+    <div class="card modal-container">
+      <div class="modal-header">
+        <h3>{{ isEditing() ? 'Edit Project' : 'Create New Project' }}</h3>
+        <button class="btn-icon close-btn" (click)="closeModal()">
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+        </button>
+      </div>
+
+      <div class="modal-body">
+        <form (ngSubmit)="saveProject()">
+          <!-- Error alert -->
+          <div class="form-error-alert" *ngIf="formError()">
+            {{ formError() }}
+          </div>
+
+          <div class="form-row">
+            <div class="form-group full-width">
+              <label for="p-title">Project Title *</label>
+              <input 
+                id="p-title" 
+                type="text" 
+                [ngModel]="title()" 
+                (ngModelChange)="title.set($event)" 
+                name="title" 
+                placeholder="Enter project name" 
+                required
+              />
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group full-width">
+              <label for="p-desc">Description</label>
+              <textarea 
+                id="p-desc" 
+                [ngModel]="description()" 
+                (ngModelChange)="description.set($event)" 
+                name="description" 
+                rows="3" 
+                placeholder="Write a brief overview of the project objectives..."
+              ></textarea>
+            </div>
+          </div>
+
+          <div class="form-row grid-fields">
+            <div class="form-group">
+              <label for="p-stack">Tech Stack (comma separated)</label>
+              <input 
+                id="p-stack" 
+                type="text" 
+                [ngModel]="techStack()" 
+                (ngModelChange)="techStack.set($event)" 
+                name="techStack" 
+                placeholder="Angular, Spring Boot, PostgreSQL"
+              />
+            </div>
+            
+            <div class="form-group">
+              <label for="p-status">Status</label>
+              <select 
+                id="p-status" 
+                [ngModel]="status()" 
+                (ngModelChange)="status.set($event)" 
+                name="status">
+                <option value="PENDING">Pending</option>
+                <option value="IN_PROGRESS">In Progress</option>
+                <option value="COMPLETED">Completed</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="form-row grid-fields">
+            <div class="form-group">
+              <label for="p-start">Start Date</label>
+              <input 
+                id="p-start" 
+                type="date" 
+                [ngModel]="startDate()" 
+                (ngModelChange)="startDate.set($event)" 
+                name="startDate"
+              />
+            </div>
+            
+            <div class="form-group">
+              <label for="p-end">End Date</label>
+              <input 
+                id="p-end" 
+                type="date" 
+                [ngModel]="endDate()" 
+                (ngModelChange)="endDate.set($event)" 
+                name="endDate"
+              />
+            </div>
+          </div>
+
+          <div class="form-row grid-fields">
+            <div class="form-group">
+              <label for="p-github">GitHub Link</label>
+              <input 
+                id="p-github" 
+                type="url" 
+                [ngModel]="githubLink()" 
+                (ngModelChange)="githubLink.set($event)" 
+                name="githubLink" 
+                placeholder="https://github.com/username/repo"
+              />
+            </div>
+            
+            <div class="form-group">
+              <label for="p-demo">Live Demo Link</label>
+              <input 
+                id="p-demo" 
+                type="url" 
+                [ngModel]="liveDemoLink()" 
+                (ngModelChange)="liveDemoLink.set($event)" 
+                name="liveDemoLink" 
+                placeholder="https://demo.devflow.ai"
+              />
+            </div>
+          </div>
+
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" (click)="closeModal()">Cancel</button>
+            <button type="submit" class="btn btn-primary">
+              {{ isEditing() ? 'Save Changes' : 'Create Project' }}
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
