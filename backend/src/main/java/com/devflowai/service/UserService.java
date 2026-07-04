@@ -1,5 +1,7 @@
 package com.devflowai.service;
 
+import com.devflowai.dto.request.PasswordChangeRequest;
+import com.devflowai.dto.request.ProfileUpdateRequest;
 import com.devflowai.dto.request.RegisterRequest;
 import com.devflowai.dto.response.UserResponse;
 import com.devflowai.entity.User;
@@ -57,5 +59,34 @@ public class UserService {
                         .role(user.getRole())
                         .build())
                 .toList();
+    }
+
+    public UserResponse updateProfile(ProfileUpdateRequest request, String email) {
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        user.setFullName(request.getFullName());
+        user.setUpdatedAt(LocalDateTime.now());
+        User savedUser = userRepository.save(user);
+
+        return UserResponse.builder()
+                .id(savedUser.getId())
+                .fullName(savedUser.getFullName())
+                .email(savedUser.getEmail())
+                .role(savedUser.getRole())
+                .build();
+    }
+
+    public void changePassword(PasswordChangeRequest request, String email) {
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        if (!passwordEncoder.matches(request.getOldPassword(), user.getPassword())) {
+            throw new IllegalArgumentException("Incorrect current password");
+        }
+
+        user.setPassword(passwordEncoder.encode(request.getNewPassword()));
+        user.setUpdatedAt(LocalDateTime.now());
+        userRepository.save(user);
     }
 }

@@ -46,4 +46,12 @@ export class AuthService {
   isLoggedIn(): boolean {
     return this.getToken() !== null;
   }
+
+  updateProfile(fullName: string): Observable<any> {
+    return this.http.put(`http://localhost:9091/api/users/profile`, { fullName });
+  }
+
+  changePassword(data: any): Observable<any> {
+    return this.http.put(`http://localhost:9091/api/users/password`, data, { responseType: 'text' });
+  }
 }

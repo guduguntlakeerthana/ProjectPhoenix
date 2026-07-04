@@ -1,1 +1,165 @@
-<p>profile works!</p>
+<div class="profile-container">
+  <header class="profile-header">
+    <div class="header-left">
+      <h1>Account Settings</h1>
+      <p class="subtitle">Customize account preferences, update passwords, and configure workspace layout settings.</p>
+    </div>
+  </header>
+
+  <div class="profile-grid">
+    <!-- Left Panel (General Details & Name Edit) -->
+    <div class="profile-left">
+      <!-- General User Info Card -->
+      <div class="card user-details-card">
+        <div class="user-big-avatar">
+          {{ fullName() ? fullName().charAt(0).toUpperCase() : 'U' }}
+        </div>
+        <div class="user-meta-info">
+          <h3>{{ fullName() }}</h3>
+          <p class="meta-email">{{ email() }}</p>
+          <span class="meta-role-badge badge">{{ role() }} Account</span>
+        </div>
+      </div>
+
+      <!-- Update details form -->
+      <div class="card settings-card" style="margin-top: 1.5rem;">
+        <h4>General Configuration</h4>
+        <p class="panel-desc">Modify personal developer name details.</p>
+
+        <form (ngSubmit)="updateProfile()">
+          <div class="form-success-alert" *ngIf="profileSuccess()">
+            {{ profileSuccess() }}
+          </div>
+          <div class="form-error-alert" *ngIf="profileError()">
+            {{ profileError() }}
+          </div>
+
+          <div class="form-row">
+            <div class="form-group full-width">
+              <label for="u-name">Developer Full Name</label>
+              <input 
+                id="u-name" 
+                type="text" 
+                [ngModel]="editFullName()" 
+                (ngModelChange)="editFullName.set($event)" 
+                name="editFullName" 
+                required
+              />
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group full-width">
+              <label for="u-email">Email Address (Read-Only)</label>
+              <input 
+                id="u-email" 
+                type="email" 
+                [ngModel]="email()" 
+                name="emailReadOnly" 
+                disabled 
+                style="opacity: 0.6; cursor: not-allowed;"
+              />
+            </div>
+          </div>
+
+          <div class="settings-btn-wrap">
+            <button type="submit" class="btn btn-primary">Save Details</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- Right Panel (Password & Theme) -->
+    <div class="profile-right">
+      <!-- Change Password Card -->
+      <div class="card settings-card">
+        <h4>Change Account Password</h4>
+        <p class="panel-desc">Update credentials periodically for enhanced workspace security.</p>
+
+        <form (ngSubmit)="changePassword()">
+          <div class="form-success-alert" *ngIf="passwordSuccess()">
+            {{ passwordSuccess() }}
+          </div>
+          <div class="form-error-alert" *ngIf="passwordError()">
+            {{ passwordError() }}
+          </div>
+
+          <div class="form-row">
+            <div class="form-group full-width">
+              <label for="pwd-old">Current Password *</label>
+              <input 
+                id="pwd-old" 
+                type="password" 
+                [ngModel]="oldPassword()" 
+                (ngModelChange)="oldPassword.set($event)" 
+                name="oldPassword" 
+                placeholder="Enter current password"
+                required
+              />
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group full-width">
+              <label for="pwd-new">New Password *</label>
+              <input 
+                id="pwd-new" 
+                type="password" 
+                [ngModel]="newPassword()" 
+                (ngModelChange)="newPassword.set($event)" 
+                name="newPassword" 
+                placeholder="Enter new password"
+                required
+              />
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group full-width">
+              <label for="pwd-confirm">Confirm New Password *</label>
+              <input 
+                id="pwd-confirm" 
+                type="password" 
+                [ngModel]="confirmPassword()" 
+                (ngModelChange)="confirmPassword.set($event)" 
+                name="confirmPassword" 
+                placeholder="Confirm new password"
+                required
+              />
+            </div>
+          </div>
+
+          <div class="settings-btn-wrap">
+            <button type="submit" class="btn btn-primary">Update Password</button>
+          </div>
+        </form>
+      </div>
+
+      <!-- Theme Customization Card -->
+      <div class="card settings-card" style="margin-top: 1.5rem;">
+        <h4>Workspace Theme</h4>
+        <p class="panel-desc">Toggle between light and dark workspace theme formats.</p>
+
+        <div class="theme-selectors-grid">
+          <button 
+            type="button" 
+            class="theme-btn select-dark" 
+            [class.active]="currentTheme() === 'dark'" 
+            (click)="toggleTheme('dark')">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
+            Dark Mode
+          </button>
+          
+          <button 
+            type="button" 
+            class="theme-btn select-light" 
+            [class.active]="currentTheme() === 'light'" 
+            (click)="toggleTheme('light')">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.07" x2="5.64" y2="17.64"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>
+            Light Mode
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
