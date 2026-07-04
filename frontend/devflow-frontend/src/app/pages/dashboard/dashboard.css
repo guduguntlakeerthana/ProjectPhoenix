@@ -326,3 +326,123 @@
   font-size: 0.75rem;
   color: var(--text-secondary);
 }
+
+/* Dashboard Analytics Styles */
+.section-title-wrap {
+  margin-bottom: 0.5rem;
+}
+
+.section-title-wrap h3 {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.border-todo { border-left: 4px solid #3b82f6; }
+.bg-todo { background-color: rgba(59, 130, 246, 0.15); color: #60a5fa; }
+
+.recent-section {
+  display: flex;
+  flex-direction: column;
+}
+
+/* Priority Breakdown list */
+.breakdown-card {
+  padding: 1.25rem;
+}
+
+.breakdown-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+  margin-top: 0.5rem;
+}
+
+.breakdown-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.5rem 0;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.breakdown-item:last-child {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+.breakdown-label {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.875rem;
+}
+
+.priority-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  display: inline-block;
+}
+
+.bg-danger { background-color: #ef4444; box-shadow: 0 0 8px #ef4444; }
+.bg-warning { background-color: #f59e0b; box-shadow: 0 0 8px #f59e0b; }
+.bg-todo-dot { background-color: #3b82f6; box-shadow: 0 0 8px #3b82f6; }
+
+.breakdown-count {
+  font-family: 'Outfit', sans-serif;
+  font-weight: 700;
+  font-size: 1rem;
+}
+
+/* Task details footer inside dashboard list */
+.task-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 0.75rem;
+}
+
+.project-name-badge {
+  font-size: 0.7rem;
+  color: var(--primary);
+  background-color: var(--primary-glow);
+  padding: 0.15rem 0.5rem;
+  border-radius: 4px;
+  border: 1px solid rgba(14, 165, 233, 0.2);
+}
+
+.task-status-chip {
+  font-size: 0.7rem;
+  font-weight: 600;
+  padding: 0.15rem 0.5rem;
+  border-radius: 4px;
+}
+
+.task-status-chip.status-todo {
+  background-color: rgba(59, 130, 246, 0.1);
+  color: #60a5fa;
+  border: 1px solid rgba(59, 130, 246, 0.2);
+}
+
+.task-status-chip.status-inprogress {
+  background-color: var(--primary-glow);
+  color: var(--primary);
+  border: 1px solid rgba(14, 165, 233, 0.2);
+}
+
+.task-status-chip.status-completed {
+  background-color: rgba(16, 185, 129, 0.1);
+  color: #34d399;
+  border: 1px solid rgba(16, 185, 129, 0.2);
+}
+
+.empty-text {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  text-align: center;
+  padding: 1rem 0;
+}
+

@@ -1,7 +1,9 @@
-import { Component, OnInit, signal, computed } from '@angular/core';
+import { Component, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
-import { ProjectService, ProjectResponse, ProjectStatsResponse } from '../../services/project';
+import { AnalyticsService, AnalyticsResponse } from '../../services/analytics';
+import { ProjectResponse } from '../../services/project';
+import { TaskResponse } from '../../services/task';
 
 @Component({
   selector: 'app-dashboard',
@@ -12,45 +14,64 @@ import { ProjectService, ProjectResponse, ProjectStatsResponse } from '../../ser
 })
 export class Dashboard implements OnInit {
 
-  recentProjects = signal<ProjectResponse[]>([]);
   isLoading = signal(true);
 
-  // Statistics signals
+  // Statistics signals (Projects)
   totalProjects = signal(0);
   completedProjects = signal(0);
   inProgressProjects = signal(0);
   pendingProjects = signal(0);
 
-  constructor(private projectService: ProjectService) {}
+  // Statistics signals (Tasks)
+  totalTasks = signal(0);
+  todoTasks = signal(0);
+  inProgressTasks = signal(0);
+  completedTasks = signal(0);
+
+  // Priority breakdown signals
+  lowPriorityTasks = signal(0);
+  mediumPriorityTasks = signal(0);
+  highPriorityTasks = signal(0);
+
+  // Recent records lists
+  recentProjects = signal<ProjectResponse[]>([]);
+  recentTasks = signal<TaskResponse[]>([]);
+
+  constructor(private analyticsService: AnalyticsService) {}
 
   ngOnInit(): void {
-    this.loadDashboardData();
+    this.loadAnalytics();
   }
 
-  loadDashboardData(): void {
+  loadAnalytics(): void {
     this.isLoading.set(true);
+    this.analyticsService.getAnalytics().subscribe({
+      next: (data: AnalyticsResponse) => {
+        // Map project stats
+        this.totalProjects.set(data.totalProjects);
+        this.completedProjects.set(data.completedProjects);
+        this.inProgressProjects.set(data.inProgressProjects);
+        this.pendingProjects.set(data.pendingProjects);
 
-    // Fetch stats
-    this.projectService.getProjectStats().subscribe({
-      next: (stats: ProjectStatsResponse) => {
-        this.totalProjects.set(stats.totalProjects);
-        this.completedProjects.set(stats.completedProjects);
-        this.inProgressProjects.set(stats.inProgressProjects);
-        this.pendingProjects.set(stats.pendingProjects);
-      },
-      error: (err) => {
-        console.error('Failed to load project stats', err);
-      }
-    });
+        // Map task stats
+        this.totalTasks.set(data.totalTasks);
+        this.todoTasks.set(data.todoTasks);
+        this.inProgressTasks.set(data.inProgressTasks);
+        this.completedTasks.set(data.completedTasks);
 
-    // Fetch 3 most recent projects
-    this.projectService.getProjects('', 'ALL', 0, 3, 'createdAt', 'desc').subscribe({
-      next: (response) => {
-        this.recentProjects.set(response.content);
+        // Map task priorities
+        this.lowPriorityTasks.set(data.lowPriorityTasks);
+        this.mediumPriorityTasks.set(data.mediumPriorityTasks);
+        this.highPriorityTasks.set(data.highPriorityTasks);
+
+        // Map recents
+        this.recentProjects.set(data.recentProjects);
+        this.recentTasks.set(data.recentTasks);
+
         this.isLoading.set(false);
       },
       error: (err) => {
-        console.error('Failed to load recent projects', err);
+        console.error('Failed to load dashboard analytics', err);
         this.isLoading.set(false);
       }
     });
