@@ -17,3 +17,15 @@ All notable changes to this project will be documented in this file.
 - Tested backend compile and test execution: `BUILD SUCCESS` (compiles and context loads successfully).
 - Verified local PostgreSQL database connectivity.
 - Checked frontend production build compilation.
+
+## [1.1.0] - 2026-07-04
+### Secured
+- Removed hardcoded secret key in `JwtService.java` and migrated to constructor injection via `@Value`.
+- Converted `application.properties` database password and JWT secret configurations to use environment variables (`DB_PASSWORD` and `JWT_SECRET`) with safe fallbacks.
+- Created `application-example.properties` outlining configuration template.
+
+### Added
+- Added custom paginated query in `ProjectRepository` supporting search, status filtering, and sorting.
+- Added a statistics endpoint `/api/projects/stats` returning aggregated count metrics of projects.
+- Integrated paginator footer controls and sort sorting dropdown to projects grid page in Angular.
+- Connected dashboard widgets directly to backend statistics API.
