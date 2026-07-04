@@ -2,6 +2,7 @@ import { Component, OnInit, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ProjectService, ProjectRequest, ProjectResponse } from '../../services/project';
+import { ProjectMemberService, ProjectMemberResponse } from '../../services/project-member';
 
 @Component({
   selector: 'app-projects',
@@ -36,6 +37,13 @@ export class Projects implements OnInit {
   isEditing = signal(false);
   selectedProjectId = signal<number | null>(null);
 
+  // Collaboration Member signals
+  isMembersModalOpen = signal(false);
+  projectMembers = signal<ProjectMemberResponse[]>([]);
+  memberEmail = signal('');
+  memberRole = signal('COLLABORATOR');
+  memberError = signal('');
+
   // Form signals
   title = signal('');
   description = signal('');
@@ -47,7 +55,10 @@ export class Projects implements OnInit {
   liveDemoLink = signal('');
   formError = signal('');
 
-  constructor(private projectService: ProjectService) {}
+  constructor(
+    private projectService: ProjectService,
+    private projectMemberService: ProjectMemberService
+  ) {}
 
   ngOnInit(): void {
     this.loadProjects();
@@ -243,6 +254,75 @@ export class Projects implements OnInit {
         error: (err) => {
           console.error('Failed to delete project', err);
           alert('Error deleting project. Please try again.');
+        }
+      });
+    }
+  }
+
+  // Collaboration Member Methods
+  openMembersModal(projectId: number): void {
+    this.selectedProjectId.set(projectId);
+    this.memberEmail.set('');
+    this.memberRole.set('COLLABORATOR');
+    this.memberError.set('');
+    this.loadMembers();
+    this.isMembersModalOpen.set(true);
+  }
+
+  closeMembersModal(): void {
+    this.isMembersModalOpen.set(false);
+    this.selectedProjectId.set(null);
+  }
+
+  loadMembers(): void {
+    const id = this.selectedProjectId();
+    if (id !== null) {
+      this.projectMemberService.getProjectMembers(id).subscribe({
+        next: (data) => {
+          this.projectMembers.set(data);
+        },
+        error: (err) => {
+          console.error('Failed to load project members', err);
+        }
+      });
+    }
+  }
+
+  inviteMember(): void {
+    const id = this.selectedProjectId();
+    const email = this.memberEmail().trim();
+    if (!email) {
+      this.memberError.set('Collaborator email is required');
+      return;
+    }
+    if (id !== null) {
+      this.projectMemberService.inviteMember({
+        email: email,
+        role: this.memberRole(),
+        projectId: id
+      }).subscribe({
+        next: () => {
+          this.memberEmail.set('');
+          this.memberError.set('');
+          this.loadMembers();
+        },
+        error: (err) => {
+          console.error('Failed to invite member', err);
+          this.memberError.set(err.error?.message || 'Error occurred inviting collaborator');
+        }
+      });
+    }
+  }
+
+  removeMember(memberId: number): void {
+    if (confirm('Are you sure you want to remove this collaborator?')) {
+      this.projectMemberService.removeMember(memberId).subscribe({
+        next: () => {
+          this.loadMembers();
+        },
+        error: (err) => {
+          console.error('Failed to remove member', err);
+          alert('Error removing member. Please try again.');
         }
       });
     }

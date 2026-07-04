@@ -398,3 +398,73 @@
   color: var(--text-secondary);
   font-weight: 500;
 }
+
+/* Collaboration Styles */
+.collab-invite-form {
+  border-bottom: 1px solid var(--border-color);
+  padding-bottom: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.collab-invite-btn-wrap {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 1rem;
+}
+
+.collab-members-list-section h4 {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 0.75rem;
+}
+
+.collab-members-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.collab-member-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.75rem 1rem;
+  background-color: rgba(255, 255, 255, 0.01);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  transition: all var(--transition-speed) ease;
+}
+
+.collab-member-item:hover {
+  background-color: rgba(255, 255, 255, 0.03);
+  border-color: var(--border-hover);
+}
+
+.collab-member-info {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.member-email {
+  font-size: 0.9rem;
+  color: var(--text-primary);
+  font-weight: 500;
+}
+
+.member-role-badge {
+  font-size: 0.7rem;
+  background-color: var(--primary-glow);
+  color: var(--primary);
+  border: 1px solid rgba(14, 165, 233, 0.2);
+}
+
+.empty-collab {
+  text-align: center;
+  padding: 2rem 0;
+  color: var(--text-muted);
+  font-size: 0.85rem;
+}
