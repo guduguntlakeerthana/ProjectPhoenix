@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ProjectService, ProjectRequest, ProjectResponse } from '../../services/project';
 import { ProjectMemberService, ProjectMemberResponse } from '../../services/project-member';
+import { AttachmentService, AttachmentResponse } from '../../services/attachment';
 
 @Component({
   selector: 'app-projects',
@@ -44,6 +45,12 @@ export class Projects implements OnInit {
   memberRole = signal('COLLABORATOR');
   memberError = signal('');
 
+  // Attachment signals
+  isAttachmentsModalOpen = signal(false);
+  projectAttachments = signal<AttachmentResponse[]>([]);
+  selectedFile = signal<File | null>(null);
+  attachmentError = signal('');
+
   // Form signals
   title = signal('');
   description = signal('');
@@ -57,7 +64,8 @@ export class Projects implements OnInit {
 
   constructor(
     private projectService: ProjectService,
-    private projectMemberService: ProjectMemberService
+    private projectMemberService: ProjectMemberService,
+    private attachmentService: AttachmentService
   ) {}
 
   ngOnInit(): void {
@@ -323,6 +331,81 @@ export class Projects implements OnInit {
         error: (err) => {
           console.error('Failed to remove member', err);
           alert('Error removing member. Please try again.');
+        }
+      });
+    }
+  }
+
+  // Attachment methods
+  openAttachmentsModal(projectId: number): void {
+    this.selectedProjectId.set(projectId);
+    this.selectedFile.set(null);
+    this.attachmentError.set('');
+    this.loadAttachments();
+    this.isAttachmentsModalOpen.set(true);
+  }
+
+  closeAttachmentsModal(): void {
+    this.isAttachmentsModalOpen.set(false);
+    this.selectedProjectId.set(null);
+  }
+
+  loadAttachments(): void {
+    const id = this.selectedProjectId();
+    if (id !== null) {
+      this.attachmentService.getProjectAttachments(id).subscribe({
+        next: (data) => {
+          this.projectAttachments.set(data);
+        },
+        error: (err) => {
+          console.error('Failed to load project attachments', err);
+        }
+      });
+    }
+  }
+
+  onFileSelected(event: any): void {
+    const file = event.target.files[0];
+    if (file) {
+      this.selectedFile.set(file);
+    }
+  }
+
+  uploadAttachment(): void {
+    const id = this.selectedProjectId();
+    const file = this.selectedFile();
+    if (!file) {
+      this.attachmentError.set('Please select a file to upload');
+      return;
+    }
+    if (id !== null) {
+      this.attachmentService.uploadFile(file, id).subscribe({
+        next: () => {
+          this.selectedFile.set(null);
+          this.attachmentError.set('');
+          this.loadAttachments();
+        },
+        error: (err) => {
+          console.error('Failed to upload file', err);
+          this.attachmentError.set(err.error?.message || 'Error uploading file');
+        }
+      });
+    }
+  }
+
+  downloadAttachment(attachment: AttachmentResponse): void {
+    window.open(this.attachmentService.getDownloadUrl(attachment.id), '_blank');
+  }
+
+  deleteAttachment(attachmentId: number): void {
+    if (confirm('Are you sure you want to delete this file?')) {
+      this.attachmentService.deleteAttachment(attachmentId).subscribe({
+        next: () => {
+          this.loadAttachments();
+        },
+        error: (err) => {
+          console.error('Failed to delete file', err);
+          alert('Error deleting file. Please try again.');
         }
       });
     }
