@@ -15,6 +15,7 @@ export class Sidebar implements OnInit {
 
   navItems = [
     { label: 'Dashboard', route: '/dashboard', icon: 'grid' },
+    { label: 'AI Assistant', route: '/ai', icon: 'cpu' },
     { label: 'Projects', route: '/projects', icon: 'folder' },
     { label: 'Tasks', route: '/tasks', icon: 'check-square' },
     { label: 'Kanban Board', route: '/kanban', icon: 'trello' },

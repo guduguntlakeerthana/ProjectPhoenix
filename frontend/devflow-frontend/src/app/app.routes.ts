@@ -24,7 +24,8 @@ export const routes: Routes = [
       { path: 'kanban', loadComponent: () => import('./pages/kanban/kanban').then(m => m.Kanban) },
       { path: 'timeline', loadComponent: () => import('./pages/timeline/timeline').then(m => m.Timeline) },
       { path: 'reports', loadComponent: () => import('./pages/reports/reports').then(m => m.Reports) },
-      { path: 'admin', loadComponent: () => import('./pages/admin/admin').then(m => m.Admin), canActivate: [adminGuard] }
+      { path: 'admin', loadComponent: () => import('./pages/admin/admin').then(m => m.Admin), canActivate: [adminGuard] },
+      { path: 'ai', loadComponent: () => import('./pages/ai/ai').then(m => m.AiAssistant) }
     ]
   },
   { path: '**', redirectTo: 'login' }

@@ -1,0 +1,72 @@
+<div class="ai-assistant-page">
+  <header class="ai-header-pane">
+    <div>
+      <h1>DevFlow AI Assistant</h1>
+      <p class="subtitle">Generate sprint checklists, create doc specs, and write technical drafts instantly.</p>
+    </div>
+  </header>
+
+  <!-- Suggestions Panel -->
+  <div class="ai-suggestions-row">
+    <button 
+      class="btn btn-secondary suggestion-btn"
+      *ngFor="let suggestion of suggestions"
+      (click)="sendPrompt(suggestion)"
+      [disabled]="isGenerating()"
+    >
+      {{ suggestion }}
+    </button>
+  </div>
+
+  <!-- Chat Screen Card -->
+  <div class="card ai-chat-card">
+    <div class="chat-thread-container">
+      <div 
+        class="message-wrapper" 
+        *ngFor="let msg of messages()"
+        [ngClass]="{
+          'user-msg-wrap': msg.sender === 'user',
+          'ai-msg-wrap': msg.sender === 'ai'
+        }"
+      >
+        <div class="message-bubble">
+          <div class="bubble-header" *ngIf="msg.sender === 'ai'">
+            <span class="ai-lbl">DevFlow AI</span>
+            <span class="simulator-tag" *ngIf="msg.simulated">Simulated Response</span>
+          </div>
+
+          <!-- White-space pre-wrap for formatted text -->
+          <div class="message-text">{{ msg.text }}</div>
+        </div>
+      </div>
+
+      <!-- Typing Indicator -->
+      <div class="message-wrapper ai-msg-wrap" *ngIf="isGenerating()">
+        <div class="message-bubble typing-bubble">
+          <span class="typing-dot"></span>
+          <span class="typing-dot"></span>
+          <span class="typing-dot"></span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Input Footer -->
+    <div class="chat-input-panel">
+      <input 
+        type="text" 
+        class="chat-input-field" 
+        placeholder="Ask AI to write a sprint breakdown, summarize notes, or draft a spec..."
+        [(ngModel)]="currentPrompt"
+        (keyup.enter)="sendPrompt()"
+        [disabled]="isGenerating()"
+      />
+      <button 
+        class="btn btn-primary send-chat-btn" 
+        (click)="sendPrompt()"
+        [disabled]="!currentPrompt.trim() || isGenerating()"
+      >
+        Send
+      </button>
+    </div>
+  </div>
+</div>
