@@ -93,4 +93,8 @@ export class ProjectService {
   deleteProject(id: number): Observable<string> {
     return this.http.delete(`${this.baseUrl}/${id}`, { responseType: 'text' });
   }
+
+  getAllProjects(): Observable<ProjectResponse[]> {
+    return this.http.get<ProjectResponse[]>(`${this.baseUrl}/all`);
+  }
 }

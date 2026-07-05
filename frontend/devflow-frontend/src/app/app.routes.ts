@@ -18,7 +18,8 @@ export const routes: Routes = [
       { path: 'tasks', loadComponent: () => import('./pages/tasks/tasks').then(m => m.Tasks) },
       { path: 'notes', loadComponent: () => import('./pages/notes/notes').then(m => m.Notes) },
       { path: 'docs', loadComponent: () => import('./pages/docs/docs').then(m => m.Docs) },
-      { path: 'profile', loadComponent: () => import('./pages/profile/profile').then(m => m.Profile) }
+      { path: 'profile', loadComponent: () => import('./pages/profile/profile').then(m => m.Profile) },
+      { path: 'calendar', loadComponent: () => import('./pages/calendar/calendar').then(m => m.Calendar) }
     ]
   },
   { path: '**', redirectTo: 'login' }

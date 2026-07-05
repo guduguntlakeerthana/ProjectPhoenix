@@ -1,0 +1,83 @@
+<div class="calendar-page-container">
+  <div class="calendar-header-pane">
+    <div>
+      <h1>Workspace Calendar</h1>
+      <p class="subtitle">Monitor task deadlines, project milestones, and sprint timelines.</p>
+    </div>
+    
+    <div class="calendar-controls">
+      <button class="btn btn-secondary" (click)="goToday()">Today</button>
+      <div class="month-nav-wrap">
+        <button class="btn-icon" (click)="prevMonth()" title="Previous Month">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"></polyline></svg>
+        </button>
+        <span class="current-month-label">{{ monthNames[currentMonth()] }} {{ currentYear() }}</span>
+        <button class="btn-icon" (click)="nextMonth()" title="Next Month">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"></polyline></svg>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div class="calendar-main-layout">
+    <!-- Grid Container -->
+    <div class="card calendar-grid-card">
+      <div class="calendar-week-headers">
+        <div class="week-header" *ngFor="let name of dayNames">{{ name }}</div>
+      </div>
+
+      <div class="calendar-days-grid">
+        <div 
+          class="calendar-day-cell"
+          *ngFor="let day of calendarDays()"
+          [class.outside-month]="!day.isCurrentMonth"
+          [class.is-today]="day.isToday"
+          [class.selected-day]="selectedDate().toDateString() === day.date.toDateString()"
+          (click)="selectDay(day)"
+        >
+          <span class="day-number">{{ day.dayNumber }}</span>
+
+          <div class="day-indicators-container">
+            <!-- Project deadlines dot -->
+            <span class="indicator-dot dot-project" *ngIf="day.projects.length > 0" [title]="day.projects.length + ' project deadline(s)'"></span>
+            <!-- Task deadlines dot -->
+            <span class="indicator-dot dot-task" *ngIf="day.tasks.length > 0" [title]="day.tasks.length + ' task(s) due'"></span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Details Sidebar -->
+    <div class="calendar-sidebar-details">
+      <div class="card event-details-card">
+        <h3>Deadlines for {{ selectedDayEvents().date | date:'longDate' }}</h3>
+        
+        <div class="sidebar-events-list">
+          <!-- Projects section -->
+          <div class="events-category-group" *ngIf="selectedDayEvents().projects.length > 0">
+            <h5>Project Milestones</h5>
+            <div class="sidebar-event-item item-project" *ngFor="let p of selectedDayEvents().projects">
+              <span class="event-title">{{ p.title }}</span>
+              <span class="event-meta">Status: {{ p.status }} &bull; Tech: {{ p.techStack }}</span>
+            </div>
+          </div>
+
+          <!-- Tasks section -->
+          <div class="events-category-group" *ngIf="selectedDayEvents().tasks.length > 0">
+            <h5>Tasks Due</h5>
+            <div class="sidebar-event-item item-task" *ngFor="let t of selectedDayEvents().tasks">
+              <span class="event-title">{{ t.title }}</span>
+              <span class="event-meta">{{ t.projectTitle }} &bull; Priority: {{ t.priority }}</span>
+            </div>
+          </div>
+
+          <!-- Empty state -->
+          <div class="empty-sidebar-events" *ngIf="selectedDayEvents().projects.length === 0 && selectedDayEvents().tasks.length === 0">
+            <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
+            <p>No deadlines scheduled for this day.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
