@@ -20,12 +20,14 @@ public class TaskService {
     private final TaskRepository taskRepository;
     private final ProjectRepository projectRepository;
     private final UserRepository userRepository;
+    private final AuditLogService auditLogService;
 
     @Autowired
-    public TaskService(TaskRepository taskRepository, ProjectRepository projectRepository, UserRepository userRepository) {
+    public TaskService(TaskRepository taskRepository, ProjectRepository projectRepository, UserRepository userRepository, AuditLogService auditLogService) {
         this.taskRepository = taskRepository;
         this.projectRepository = projectRepository;
         this.userRepository = userRepository;
+        this.auditLogService = auditLogService;
     }
 
     private User getUserByEmail(String email) {
@@ -71,7 +73,9 @@ public class TaskService {
                 .project(project)
                 .build();
 
-        return mapToResponse(taskRepository.save(task));
+        Task savedTask = taskRepository.save(task);
+        auditLogService.logAction(user, "TASK_CREATED", "Task created: " + savedTask.getTitle() + " under project ID: " + savedTask.getProject().getId());
+        return mapToResponse(savedTask);
     }
 
     public List<TaskResponse> getAllTasks(String email) {
@@ -111,7 +115,9 @@ public class TaskService {
         task.setProject(project);
         task.setUpdatedAt(LocalDateTime.now());
 
-        return mapToResponse(taskRepository.save(task));
+        Task savedTask = taskRepository.save(task);
+        auditLogService.logAction(user, "TASK_UPDATED", "Task updated: " + savedTask.getTitle() + ", Status: " + savedTask.getStatus());
+        return mapToResponse(savedTask);
     }
 
     public void deleteTask(Long id, String email) {
@@ -119,5 +125,6 @@ public class TaskService {
         Task task = taskRepository.findByIdAndUser(id, user)
                 .orElseThrow(() -> new RuntimeException("Task not found"));
         taskRepository.delete(task);
+        auditLogService.logAction(user, "TASK_DELETED", "Task deleted: " + task.getTitle() + " (ID: " + id + ")");
     }
 }

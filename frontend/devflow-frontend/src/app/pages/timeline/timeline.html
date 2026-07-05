@@ -1,0 +1,49 @@
+<div class="timeline-page-container">
+  <header class="timeline-header-pane">
+    <h1>Activity Timeline</h1>
+    <p class="subtitle">Track workspace edits, project modifications, note updates, and task operations.</p>
+  </header>
+
+  <div class="timeline-wrapper-thread" *ngIf="!isLoading()">
+    <div 
+      class="timeline-event-item"
+      *ngFor="let log of logs()"
+    >
+      <!-- Icon thread marker -->
+      <div class="timeline-marker" [ngClass]="getActionClass(log.action)">
+        <!-- Plus/Create marker -->
+        <svg *ngIf="log.action.includes('CREATED')" xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+        
+        <!-- Refresh/Update marker -->
+        <svg *ngIf="log.action.includes('UPDATED')" xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"></path></svg>
+        
+        <!-- Trash/Delete marker -->
+        <svg *ngIf="log.action.includes('DELETED')" xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+        
+        <!-- User/Login marker -->
+        <svg *ngIf="log.action.includes('LOGIN')" xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+      </div>
+
+      <!-- Detail Card -->
+      <div class="card timeline-event-card">
+        <div class="event-card-header">
+          <span class="event-action-badge">{{ log.action }}</span>
+          <span class="event-timestamp">{{ log.createdAt | date:'medium' }}</span>
+        </div>
+        <p class="event-details-text">{{ log.details }}</p>
+        <span class="event-user-meta">Triggered by: {{ log.userEmail }}</span>
+      </div>
+    </div>
+
+    <!-- Empty State -->
+    <div class="empty-timeline-state" *ngIf="logs().length === 0">
+      <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+      <p>Your activity thread is currently empty. Start creating projects and tasks to populate the log.</p>
+    </div>
+  </div>
+
+  <!-- Loading State -->
+  <div class="loading-state" *ngIf="isLoading()">
+    <p>Loading activity thread details...</p>
+  </div>
+</div>

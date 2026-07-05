@@ -26,6 +26,9 @@ public class ProjectService {
     @Autowired
     private UserRepository userRepository;
 
+    @Autowired
+    private AuditLogService auditLogService;
+
     private User getUserByEmail(String email) {
         return userRepository.findByEmail(email)
                 .orElseThrow(() -> new RuntimeException("User not found"));
@@ -73,7 +76,9 @@ public class ProjectService {
                 .user(user)
                 .build();
 
-        return mapToResponse(projectRepository.save(project));
+        Project savedProject = projectRepository.save(project);
+        auditLogService.logAction(user, "PROJECT_CREATED", "Project created: " + savedProject.getTitle() + " (ID: " + savedProject.getId() + ")");
+        return mapToResponse(savedProject);
     }
 
     public List<ProjectResponse> getMyProjects(String email) {
@@ -151,7 +156,9 @@ public class ProjectService {
         project.setLiveDemoLink(request.getLiveDemoLink());
         project.setUpdatedAt(LocalDateTime.now());
 
-        return mapToResponse(projectRepository.save(project));
+        Project savedProject = projectRepository.save(project);
+        auditLogService.logAction(user, "PROJECT_UPDATED", "Project updated: " + savedProject.getTitle() + " (ID: " + savedProject.getId() + ")");
+        return mapToResponse(savedProject);
     }
 
     public void deleteProject(Long id, String email) {
@@ -161,5 +168,6 @@ public class ProjectService {
                 .orElseThrow(() -> new RuntimeException("Project not found"));
 
         projectRepository.delete(project);
+        auditLogService.logAction(user, "PROJECT_DELETED", "Project deleted: " + project.getTitle() + " (ID: " + id + ")");
     }
 }

@@ -22,6 +22,9 @@ public class AuthService {
     @Autowired
     private JwtService jwtService;
 
+    @Autowired
+    private AuditLogService auditLogService;
+
     public LoginResponse login(LoginRequest request) {
 
         User user = userRepository.findByEmail(request.getEmail())
@@ -33,6 +36,8 @@ public class AuthService {
         }
 
         String token = jwtService.generateToken(user.getEmail());
+
+        auditLogService.logAction(user, "USER_LOGIN", "User logged in successfully via JWT");
 
         return LoginResponse.builder()
                 .token(token)

@@ -16,6 +16,7 @@ export class Sidebar {
     { label: 'Tasks', route: '/tasks', icon: 'check-square' },
     { label: 'Kanban Board', route: '/kanban', icon: 'trello' },
     { label: 'Calendar', route: '/calendar', icon: 'calendar' },
+    { label: 'Activity Timeline', route: '/timeline', icon: 'activity' },
     { label: 'Notes', route: '/notes', icon: 'file-text' },
     { label: 'Docs', route: '/docs', icon: 'book' },
     { label: 'GitHub Tracking', route: '/github', icon: 'github' }
