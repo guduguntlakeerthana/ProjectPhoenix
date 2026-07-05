@@ -4,6 +4,7 @@ import { MainLayout } from './layout/main-layout/main-layout';
 import { Dashboard } from './pages/dashboard/dashboard';
 import { Projects } from './pages/projects/projects';
 import { authGuard } from './guards/auth-guard';
+import { adminGuard } from './guards/admin-guard';
 
 export const routes: Routes = [
   { path: '', redirectTo: 'login', pathMatch: 'full' },
@@ -22,7 +23,8 @@ export const routes: Routes = [
       { path: 'calendar', loadComponent: () => import('./pages/calendar/calendar').then(m => m.Calendar) },
       { path: 'kanban', loadComponent: () => import('./pages/kanban/kanban').then(m => m.Kanban) },
       { path: 'timeline', loadComponent: () => import('./pages/timeline/timeline').then(m => m.Timeline) },
-      { path: 'reports', loadComponent: () => import('./pages/reports/reports').then(m => m.Reports) }
+      { path: 'reports', loadComponent: () => import('./pages/reports/reports').then(m => m.Reports) },
+      { path: 'admin', loadComponent: () => import('./pages/admin/admin').then(m => m.Admin), canActivate: [adminGuard] }
     ]
   },
   { path: '**', redirectTo: 'login' }

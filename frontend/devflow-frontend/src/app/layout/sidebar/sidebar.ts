@@ -1,6 +1,7 @@
-import { Component } from '@angular/core';
+import { Component, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink, RouterLinkActive } from '@angular/router';
+import { AuthService } from '../../services/auth';
 
 @Component({
   selector: 'app-sidebar',
@@ -9,7 +10,9 @@ import { RouterLink, RouterLinkActive } from '@angular/router';
   templateUrl: './sidebar.html',
   styleUrl: './sidebar.css',
 })
-export class Sidebar {
+export class Sidebar implements OnInit {
+  isAdmin = signal(false);
+
   navItems = [
     { label: 'Dashboard', route: '/dashboard', icon: 'grid' },
     { label: 'Projects', route: '/projects', icon: 'folder' },
@@ -22,4 +25,17 @@ export class Sidebar {
     { label: 'Docs', route: '/docs', icon: 'book' },
     { label: 'GitHub Tracking', route: '/github', icon: 'github' }
   ];
+
+  constructor(private authService: AuthService) {}
+
+  ngOnInit(): void {
+    this.authService.getMe().subscribe({
+      next: (user) => {
+        if (user && user.role === 'ADMIN') {
+          this.isAdmin.set(true);
+        }
+      },
+      error: () => this.isAdmin.set(false)
+    });
+  }
 }

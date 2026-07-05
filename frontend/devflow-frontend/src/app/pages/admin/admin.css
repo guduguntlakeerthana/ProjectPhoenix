@@ -1,0 +1,223 @@
+.admin-page-container {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.admin-header-pane {
+  border-bottom: 1px solid var(--border-color);
+  padding-bottom: 1.5rem;
+}
+
+.admin-header-pane h1 {
+  font-size: 2rem;
+  font-weight: 700;
+  margin-bottom: 0.5rem;
+  background: linear-gradient(to right, var(--text-primary), var(--text-secondary));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* Administrative split */
+.admin-main-split {
+  display: grid;
+  grid-template-columns: 1.25fr 1fr;
+  gap: 2rem;
+  align-items: start;
+}
+
+@media (max-width: 992px) {
+  .admin-main-split {
+    grid-template-columns: 1fr;
+  }
+}
+
+.admin-management-card {
+  padding: 1.75rem;
+}
+
+.admin-management-card h3 {
+  font-size: 1.15rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 0.25rem;
+}
+
+.section-desc {
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+  margin-bottom: 1.5rem;
+}
+
+/* User tables */
+.table-container {
+  overflow-x: auto;
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+}
+
+.admin-users-table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+}
+
+.admin-users-table th {
+  background-color: rgba(255, 255, 255, 0.02);
+  border-bottom: 1px solid var(--border-color);
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  padding: 0.85rem 1.25rem;
+}
+
+.admin-users-table td {
+  padding: 1rem 1.25rem;
+  border-bottom: 1px solid var(--border-color);
+  font-size: 0.85rem;
+  color: var(--text-primary);
+  vertical-align: middle;
+}
+
+.admin-users-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.admin-users-table tbody tr:hover {
+  background-color: rgba(255, 255, 255, 0.01);
+}
+
+.user-info-cell {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.user-info-cell .name {
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.user-info-cell .email {
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+}
+
+/* Role Badges */
+.role-badge {
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.7rem;
+  font-weight: 700;
+  padding: 0.2rem 0.5rem;
+  border-radius: 4px;
+}
+
+.role-badge.badge-admin {
+  background-color: rgba(239, 68, 68, 0.08);
+  color: #ef4444;
+  border: 1px solid rgba(239, 68, 68, 0.2);
+}
+
+.role-badge.badge-user {
+  background-color: rgba(14, 165, 233, 0.08);
+  color: var(--primary);
+  border: 1px solid rgba(14, 165, 233, 0.2);
+}
+
+.role-select {
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.8rem;
+  background-color: rgba(255, 255, 255, 0.03);
+  border: 1px solid var(--border-color);
+  color: var(--text-primary);
+  padding: 0.3rem 0.6rem;
+  border-radius: 6px;
+  outline: none;
+  cursor: pointer;
+}
+
+.role-select:hover {
+  border-color: var(--border-hover);
+}
+
+/* Audit logs list inside admin panel */
+.audit-logs-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  max-height: 480px;
+  overflow-y: auto;
+  padding-right: 0.5rem;
+}
+
+.audit-log-item {
+  padding: 1rem;
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  background-color: rgba(255, 255, 255, 0.01);
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.log-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.log-badge {
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.65rem;
+  font-weight: 700;
+  padding: 0.15rem 0.4rem;
+  border-radius: 4px;
+}
+
+.log-badge.lbl-create {
+  background-color: rgba(16, 185, 129, 0.08);
+  color: #10b981;
+}
+
+.log-badge.lbl-update {
+  background-color: rgba(14, 165, 233, 0.08);
+  color: var(--primary);
+}
+
+.log-badge.lbl-delete {
+  background-color: rgba(239, 68, 68, 0.08);
+  color: #ef4444;
+}
+
+.log-badge.lbl-default {
+  background-color: rgba(168, 85, 247, 0.08);
+  color: var(--accent);
+}
+
+.log-time {
+  font-size: 0.7rem;
+  color: var(--text-muted);
+}
+
+.log-details {
+  font-size: 0.8rem;
+  color: var(--text-primary);
+  line-height: 1.4;
+}
+
+.log-user {
+  font-size: 0.7rem;
+  color: var(--text-secondary);
+}
+
+.empty-logs {
+  text-align: center;
+  padding: 3rem 1rem;
+  color: var(--text-muted);
+  font-size: 0.8rem;
+}

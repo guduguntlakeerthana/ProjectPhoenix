@@ -1,0 +1,107 @@
+<div class="admin-page-container">
+  <header class="admin-header-pane">
+    <h1>System Administration</h1>
+    <p class="subtitle">Oversee registered users, monitor global system workloads, and review activity audits.</p>
+  </header>
+
+  <div class="admin-dashboard-grid" *ngIf="!isLoading()">
+    
+    <!-- KPI Row -->
+    <div class="kpi-cards-row" *ngIf="stats()">
+      <div class="card kpi-metric-card">
+        <span class="kpi-label">Registered Accounts</span>
+        <span class="kpi-value">{{ stats()?.totalUsers }}</span>
+      </div>
+      <div class="card kpi-metric-card">
+        <span class="kpi-label">Global Projects</span>
+        <span class="kpi-value">{{ stats()?.totalProjects }}</span>
+      </div>
+      <div class="card kpi-metric-card">
+        <span class="kpi-label">Global Tasks</span>
+        <span class="kpi-value">{{ stats()?.totalTasks }}</span>
+      </div>
+      <div class="card kpi-metric-card">
+        <span class="kpi-label">Stored File Attachments</span>
+        <span class="kpi-value">{{ stats()?.totalAttachments }}</span>
+      </div>
+    </div>
+
+    <!-- Main administrative split -->
+    <div class="admin-main-split">
+      
+      <!-- Users Management Card -->
+      <div class="card admin-management-card">
+        <h3>User Directory & Access Controls</h3>
+        <p class="section-desc">Manage system accounts and adjust user roles.</p>
+        
+        <div class="table-container">
+          <table class="admin-users-table">
+            <thead>
+              <tr>
+                <th>User Details</th>
+                <th>Access Role</th>
+                <th>Joined Date</th>
+                <th class="actions-th">Modify Authority</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let user of users()">
+                <td>
+                  <div class="user-info-cell">
+                    <span class="name">{{ user.fullName }}</span>
+                    <span class="email">{{ user.email }}</span>
+                  </div>
+                </td>
+                <td>
+                  <span class="role-badge" [ngClass]="{
+                    'badge-admin': user.role === 'ADMIN',
+                    'badge-user': user.role !== 'ADMIN'
+                  }">{{ user.role }}</span>
+                </td>
+                <td>{{ user.createdAt | date:'mediumDate' }}</td>
+                <td class="actions-td">
+                  <select 
+                    [ngModel]="user.role" 
+                    (ngModelChange)="changeRole(user, $event)"
+                    [disabled]="isSubmitting()"
+                    class="role-select"
+                  >
+                    <option value="USER">USER</option>
+                    <option value="ADMIN">ADMIN</option>
+                  </select>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- System Log Feed -->
+      <div class="card admin-management-card">
+        <h3>System Audit Stream</h3>
+        <p class="section-desc">Live log stream tracking mutations across the DevFlow AI platform.</p>
+        
+        <div class="audit-logs-list">
+          <div class="audit-log-item" *ngFor="let log of logs()">
+            <div class="log-top">
+              <span class="log-badge" [ngClass]="getLogActionClass(log.action)">{{ log.action }}</span>
+              <span class="log-time">{{ log.createdAt | date:'short' }}</span>
+            </div>
+            <p class="log-details">{{ log.details }}</p>
+            <span class="log-user">Actor: {{ log.userEmail }}</span>
+          </div>
+
+          <div class="empty-logs" *ngIf="logs().length === 0">
+            <p>No logged actions found.</p>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+
+  <div class="loading-state" *ngIf="isLoading()">
+    <p>Retrieving administrative system states...</p>
+  </div>
+</div>
