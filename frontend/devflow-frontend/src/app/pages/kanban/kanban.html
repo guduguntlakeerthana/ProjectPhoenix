@@ -1,0 +1,81 @@
+<div class="kanban-page-container">
+  <div class="kanban-header-pane">
+    <div>
+      <h1>Workspace Kanban Board</h1>
+      <p class="subtitle">Organize sprint tasks, track workflow statuses, and align team efforts.</p>
+    </div>
+    
+    <!-- Project selector filter -->
+    <div class="kanban-filter-wrap">
+      <label for="k-project">Active Project</label>
+      <select 
+        id="k-project" 
+        [ngModel]="selectedProjectId()" 
+        (ngModelChange)="onProjectChange($event)"
+        name="selectedProject"
+      >
+        <option *ngFor="let p of projects()" [value]="p.id">{{ p.title }}</option>
+      </select>
+    </div>
+  </div>
+
+  <!-- Board Columns wrapper -->
+  <div class="kanban-board-wrapper">
+    <div 
+      class="kanban-column" 
+      *ngFor="let col of columns"
+      [ngClass]="col.class"
+    >
+      <div class="column-header">
+        <span class="column-title">{{ col.label }}</span>
+        <span class="column-count">{{ getTasksForColumn(col.key).length }}</span>
+      </div>
+
+      <div class="column-cards-container">
+        <!-- Task Card -->
+        <div 
+          class="card task-kanban-card" 
+          *ngFor="let task of getTasksForColumn(col.key)"
+        >
+          <div class="task-card-header">
+            <h4 class="task-title">{{ task.title }}</h4>
+            <span class="priority-badge badge" [ngClass]="{
+              'badge-pending': task.priority === 'LOW',
+              'badge-inprogress': task.priority === 'MEDIUM',
+              'badge-completed': task.priority === 'HIGH'
+            }">{{ task.priority }}</span>
+          </div>
+
+          <p class="task-desc" *ngIf="task.description">{{ task.description }}</p>
+
+          <div class="task-card-footer">
+            <span class="task-due-date" *ngIf="task.dueDate">
+              <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
+              {{ task.dueDate | date:'mediumDate' }}
+            </span>
+
+            <!-- Status Shift Actions Selector -->
+            <div class="status-selector-wrap">
+              <label [for]="'status-' + task.id" class="sr-only">Move Status</label>
+              <select 
+                [id]="'status-' + task.id"
+                [ngModel]="task.status" 
+                (ngModelChange)="moveTask(task, $event)"
+              >
+                <option value="TODO">Todo</option>
+                <option value="IN_PROGRESS">In Progress</option>
+                <option value="REVIEW">Review</option>
+                <option value="DONE">Completed</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <!-- Empty state within column -->
+        <div class="empty-column-state" *ngIf="getTasksForColumn(col.key).length === 0">
+          <p>No tasks here</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

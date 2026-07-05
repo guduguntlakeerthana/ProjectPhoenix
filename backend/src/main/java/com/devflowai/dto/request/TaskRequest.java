@@ -20,7 +20,7 @@ public class TaskRequest {
     private String description;
 
     @NotBlank(message = "Status is required")
-    @Pattern(regexp = "^(TODO|IN_PROGRESS|DONE)$", message = "Status must be TODO, IN_PROGRESS, or DONE")
+    @Pattern(regexp = "^(TODO|IN_PROGRESS|REVIEW|DONE)$", message = "Status must be TODO, IN_PROGRESS, REVIEW, or DONE")
     private String status;
 
     @NotBlank(message = "Priority is required")
