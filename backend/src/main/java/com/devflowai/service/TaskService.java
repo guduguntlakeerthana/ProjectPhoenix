@@ -21,13 +21,21 @@ public class TaskService {
     private final ProjectRepository projectRepository;
     private final UserRepository userRepository;
     private final AuditLogService auditLogService;
+    private final EmailService emailService;
 
     @Autowired
-    public TaskService(TaskRepository taskRepository, ProjectRepository projectRepository, UserRepository userRepository, AuditLogService auditLogService) {
+    public TaskService(
+            TaskRepository taskRepository, 
+            ProjectRepository projectRepository, 
+            UserRepository userRepository, 
+            AuditLogService auditLogService,
+            EmailService emailService
+    ) {
         this.taskRepository = taskRepository;
         this.projectRepository = projectRepository;
         this.userRepository = userRepository;
         this.auditLogService = auditLogService;
+        this.emailService = emailService;
     }
 
     private User getUserByEmail(String email) {
@@ -75,6 +83,8 @@ public class TaskService {
 
         Task savedTask = taskRepository.save(task);
         auditLogService.logAction(user, "TASK_CREATED", "Task created: " + savedTask.getTitle() + " under project ID: " + savedTask.getProject().getId());
+        emailService.sendEmail(user.getEmail(), "New Task Created: " + savedTask.getTitle(), 
+                "Hello " + user.getFullName() + ",\n\nA new task has been created under project: " + project.getTitle() + ".\n\nTask details:\nTitle: " + savedTask.getTitle() + "\nPriority: " + savedTask.getPriority() + "\n\nBest regards,\nDevFlow AI Team");
         return mapToResponse(savedTask);
     }
 
@@ -117,6 +127,8 @@ public class TaskService {
 
         Task savedTask = taskRepository.save(task);
         auditLogService.logAction(user, "TASK_UPDATED", "Task updated: " + savedTask.getTitle() + ", Status: " + savedTask.getStatus());
+        emailService.sendEmail(user.getEmail(), "Task Update: " + savedTask.getTitle(), 
+                "Hello " + user.getFullName() + ",\n\nYour task status has been updated to: " + savedTask.getStatus() + ".\n\nBest regards,\nDevFlow AI Team");
         return mapToResponse(savedTask);
     }
 
