@@ -1,66 +1,103 @@
 # DevFlow AI
 
-DevFlow AI is an AI-powered developer productivity platform designed to help software engineers and teams manage projects, track tasks, write documentation, take markdown notes, integrate Git repositories, monitor dashboard analytics, and collaborate using AI assistance.
+DevFlow AI is a production-grade, enterprise-ready developer productivity platform. It empowers software engineering teams with collaborative task tracking, interactive Gantt/Calendar planners, visual Kanban boards, markdown notes, system audit timelines, visual CSS productivity reports, and an AI-powered assistant designed for sprint planning and document drafting.
 
-## Directory Structure
-
-This project is organized as a unified full-stack monorepo:
+## Monorepo Directory Structure
 
 ```text
 ProjectPhoenix/
 ├── backend/            # Spring Boot 3.x REST API (Java 17, Maven)
-├── frontend/           # Angular 21 Standalone Application (TypeScript)
-├── docs/               # Architecture diagrams and API documentation
-├── database/           # PostgreSQL configuration and migration plans
-├── deployment/         # Docker Compose and deployment manifests
-├── assets/             # Images and branding assets
-├── ai/                 # AI service models and helper modules
-└── ui/                 # Design assets and style references
+│   ├── src/            # Java source files (Entity-Repository-Service-Controller model)
+│   └── Dockerfile      # Multi-stage production build configuration
+├── frontend/           # Angular 21 Standalone App (TypeScript)
+│   ├── src/            # Standalone component hierarchies
+│   ├── nginx.conf      # Client server proxy and route routing rules
+│   └── Dockerfile      # Multi-stage Angular-Nginx serve configuration
+├── docker-compose.yml  # Orchestrator binding Postgres, Backend, and Frontend
+└── README.md           # Getting started manual
 ```
-
-## Tech Stack & Configuration
-
-### Backend
-- **Framework**: Spring Boot 3.x
-- **Language**: Java 17
-- **Database**: PostgreSQL (Spring Data JPA)
-- **Security**: Spring Security with stateless JWT Authentication
-- **Port**: `9091`
-
-### Frontend
-- **Framework**: Angular 21 (Standalone Components)
-- **Language**: TypeScript
-- **Styling**: Vanilla CSS (Developer dark-mode design system)
-- **Port**: `4300`
-
-### Database
-- **Engine**: PostgreSQL
-- **Port**: `5432`
-- **Database Name**: `devflowai`
 
 ---
 
-## Setup & Running the Workspace
+## Technical Architecture & Configuration
 
-### 1. Database Configuration
-Ensure PostgreSQL is running locally on port `5432` and create a database named `devflowai`. Update the database credentials in `backend/src/main/resources/application.properties` if needed:
-```properties
-spring.datasource.url=jdbc:postgresql://localhost:5432/devflowai
-spring.datasource.username=postgres
-spring.datasource.password=yourpassword
-```
+### Backend Core
+- **Framework**: Spring Boot 3.x
+- **Platform**: Java 17
+- **Database Layer**: Spring Data JPA & PostgreSQL
+- **Security Context**: Stateless Spring Security with custom JWT Token Filters
+- **Server Port**: `9091`
 
-### 2. Run the Backend REST API
-Navigate to the `backend/` directory and run using Maven:
+### Frontend UI
+- **Framework**: Angular 21 (Standalone Architecture)
+- **Language**: TypeScript
+- **Styling**: Harmony-tailored Dark Mode CSS
+- **Server Port**: `4300`
+
+---
+
+## Environment Variables Configuration
+
+DevFlow AI isolates credentials using standard environment configurations. Make sure to define the following parameters when launching in production:
+
+| Variable Name | Description | Default / Example Value |
+| :--- | :--- | :--- |
+| `DB_PASSWORD` | PostgreSQL Database Password | `keerthi12` |
+| `JWT_SECRET` | Secret key used for signing authentication tokens | `devflowai-super-secret-key-for-jwt-authentication-2026` |
+| `SMTP_HOST` | Outgoing SMTP mail server host | `smtp.gmail.com` |
+| `SMTP_PORT` | Outgoing SMTP mail server port | `587` |
+| `SMTP_USERNAME`| Username credentials for sending emails | `alerts@devflowai.com` |
+| `SMTP_PASSWORD`| Password/App key credentials for emails | `yoursmtppassword` |
+| `GEMINI_API_KEY`| API Key for Google Gemini LLM generation | `AIzaSyYourGeminiApiKey` |
+
+---
+
+## Local Development Execution Guide
+
+### 1. Database Initialization
+Verify PostgreSQL is active on port `5432` and create a target schema named `devflowai`.
+
+### 2. Launch the Backend API
+Navigate to the `backend/` directory, set environment overrides, and trigger compilation:
 ```bash
-mvn spring-boot:run
+cd backend
+.\mvnw.cmd spring-boot:run
 ```
-The REST API will launch on [http://localhost:9091](http://localhost:9091).
+The server will initialize REST controllers on [http://localhost:9091](http://localhost:9091).
 
-### 3. Run the Frontend App
-Navigate to the `frontend/devflow-frontend/` directory, install packages, and start the development server:
+### 3. Launch the Client Application
+Navigate to `frontend/devflow-frontend/`, install node packages, and start:
 ```bash
+cd frontend/devflow-frontend
 npm install
-npm start
+npm run start
 ```
-The client app will launch on [http://localhost:4300](http://localhost:4300).
+Open your browser at [http://localhost:4300](http://localhost:4300).
+
+---
+
+## Docker Container Deployment
+
+DevFlow AI can be fully orchestrated using Docker Compose. Make sure Docker Desktop is active on your machine:
+
+1. **Build and Spin Up Containers**:
+   ```bash
+   docker-compose up --build -d
+   ```
+2. **Access Points**:
+   - Angular UI Frontend: [http://localhost:4300](http://localhost:4300)
+   - Spring Boot REST API: [http://localhost:9091](http://localhost:9091)
+   - PostgreSQL Database: `localhost:5432` (database `devflowai`)
+
+---
+
+## Core Application Modules
+
+1. **Authentication & Identity**: User registration and login protected by JWT filters and BCrypt hashing.
+2. **Project Workspace**: Collaborative repositories with invitation modals and document attachment panels.
+3. **Task & Sprint Planners**: Detailed task descriptions, priority triggers, and file download tools.
+4. **Kanban Boards**: Status-focused columns (Todo, In Progress, Review, Completed) supporting rapid dropdown status updates.
+5. **Interactive Calendars**: Monthly calendar grids highlighting project limits, due items, and sidebar lists.
+6. **Activity Log Auditing**: Global and user-specific audit tables tracking create, edit, delete, and login actions.
+7. **Productivity Visualizations**: conic-gradient progress circles and horizontal bar progress summaries.
+8. **AI planning Assistant**: Generates sprint planning checklists, drafts specs, and supports chat threads.
