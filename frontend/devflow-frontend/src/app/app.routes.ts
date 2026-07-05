@@ -21,7 +21,8 @@ export const routes: Routes = [
       { path: 'profile', loadComponent: () => import('./pages/profile/profile').then(m => m.Profile) },
       { path: 'calendar', loadComponent: () => import('./pages/calendar/calendar').then(m => m.Calendar) },
       { path: 'kanban', loadComponent: () => import('./pages/kanban/kanban').then(m => m.Kanban) },
-      { path: 'timeline', loadComponent: () => import('./pages/timeline/timeline').then(m => m.Timeline) }
+      { path: 'timeline', loadComponent: () => import('./pages/timeline/timeline').then(m => m.Timeline) },
+      { path: 'reports', loadComponent: () => import('./pages/reports/reports').then(m => m.Reports) }
     ]
   },
   { path: '**', redirectTo: 'login' }

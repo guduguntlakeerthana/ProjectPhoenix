@@ -1,0 +1,137 @@
+<div class="reports-page-container">
+  <header class="reports-header-pane">
+    <div>
+      <h1>Productivity & Performance Reports</h1>
+      <p class="subtitle">Gain visual insights on project speeds, sprint milestones, and resource capacities.</p>
+    </div>
+    
+    <button class="btn btn-secondary print-hide" (click)="printReport()">
+      <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 6 2 18 2 18 9"></polyline><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path><rect x="6" y="14" width="12" height="8"></rect></svg>
+      Export PDF / Print
+    </button>
+  </header>
+
+  <div class="reports-dashboard-grid" *ngIf="!isLoading() && summary()">
+    
+    <!-- Top Level KPI Cards -->
+    <div class="kpi-cards-row">
+      <div class="card kpi-metric-card">
+        <span class="kpi-label">Active Workspace Projects</span>
+        <span class="kpi-value">{{ summary()?.totalProjects }}</span>
+      </div>
+
+      <div class="card kpi-metric-card">
+        <span class="kpi-label">Total Allocated Tasks</span>
+        <span class="kpi-value">{{ summary()?.totalTasks }}</span>
+      </div>
+
+      <div class="card kpi-metric-card">
+        <span class="kpi-label">Average Task Progress</span>
+        <span class="kpi-value">{{ taskProgressRate() }}%</span>
+      </div>
+
+      <div class="card kpi-metric-card">
+        <span class="kpi-label">Completion Efficiency</span>
+        <span class="kpi-value">{{ taskCompletionRate() }}%</span>
+      </div>
+    </div>
+
+    <!-- Charts Row -->
+    <div class="charts-dashboard-row">
+      
+      <!-- Radial Completion Chart -->
+      <div class="card chart-panel-card">
+        <h3>Task Completion Ratio</h3>
+        <p class="chart-desc">Percentage of total completed vs remaining tasks.</p>
+        
+        <div class="radial-chart-container">
+          <div 
+            class="radial-progress-bar"
+            [style.background]="'conic-gradient(var(--primary) ' + taskCompletionRate() * 3.6 + 'deg, rgba(255, 255, 255, 0.05) 0deg)'"
+          >
+            <div class="radial-inner-label">
+              <span class="pct">{{ taskCompletionRate() }}%</span>
+              <span class="lbl">Completed</span>
+            </div>
+          </div>
+        </div>
+        
+        <div class="chart-legend-wrap">
+          <div class="legend-item"><span class="legend-color legend-primary"></span> Done ({{ summary()?.completedTasks }} tasks)</div>
+          <div class="legend-item"><span class="legend-color legend-muted"></span> Remaining ({{ (summary()?.totalTasks || 0) - (summary()?.completedTasks || 0) }} tasks)</div>
+        </div>
+      </div>
+
+      <!-- Priority Distribution Bar Chart -->
+      <div class="card chart-panel-card">
+        <h3>Task Priority Allocations</h3>
+        <p class="chart-desc">Task load categorized by priority flags.</p>
+        
+        <div class="distribution-bars-container">
+          <!-- High Priority -->
+          <div class="bar-distribution-item">
+            <div class="bar-info">
+              <span class="bar-label">High Priority</span>
+              <span class="bar-value">{{ summary()?.highPriorityTasks }} task(s) &bull; {{ priorityPercentages().high }}%</span>
+            </div>
+            <div class="progress-bar-track">
+              <div class="progress-bar-fill fill-high" [style.width.%]="priorityPercentages().high"></div>
+            </div>
+          </div>
+
+          <!-- Medium Priority -->
+          <div class="bar-distribution-item">
+            <div class="bar-info">
+              <span class="bar-label">Medium Priority</span>
+              <span class="bar-value">{{ summary()?.mediumPriorityTasks }} task(s) &bull; {{ priorityPercentages().medium }}%</span>
+            </div>
+            <div class="progress-bar-track">
+              <div class="progress-bar-fill fill-medium" [style.width.%]="priorityPercentages().medium"></div>
+            </div>
+          </div>
+
+          <!-- Low Priority -->
+          <div class="bar-distribution-item">
+            <div class="bar-info">
+              <span class="bar-label">Low Priority</span>
+              <span class="bar-value">{{ summary()?.lowPriorityTasks }} task(s) &bull; {{ priorityPercentages().low }}%</span>
+            </div>
+            <div class="progress-bar-track">
+              <div class="progress-bar-fill fill-low" [style.width.%]="priorityPercentages().low"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Workflow Status Split -->
+    <div class="card chart-panel-card fullwidth-card">
+      <h3>Workflow Status Metrics</h3>
+      <p class="chart-desc">Active count distributions across Kanban status phases.</p>
+      
+      <div class="workflow-grid-split">
+        <div class="workflow-col">
+          <span class="w-status">Todo</span>
+          <span class="w-value">{{ summary()?.todoTasks }}</span>
+        </div>
+        <div class="workflow-col">
+          <span class="w-status">In Progress</span>
+          <span class="w-value text-sky">{{ summary()?.inProgressTasks }}</span>
+        </div>
+        <div class="workflow-col">
+          <span class="w-status">Under Review</span>
+          <span class="w-value text-purple">{{ summary()?.reviewTasks }}</span>
+        </div>
+        <div class="workflow-col">
+          <span class="w-status">Completed</span>
+          <span class="w-value text-green">{{ summary()?.completedTasks }}</span>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="loading-state" *ngIf="isLoading()">
+    <p>Assembling productivity analytics and charts...</p>
+  </div>
+</div>
