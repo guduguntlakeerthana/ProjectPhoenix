@@ -10,7 +10,6 @@ import org.springframework.security.core.Authentication;
 
 @RestController
 @RequestMapping("/api/auth")
-@CrossOrigin(origins = "http://localhost:4300")
 public class AuthController {
 
     @GetMapping("/me")

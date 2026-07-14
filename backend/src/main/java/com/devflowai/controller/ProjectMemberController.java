@@ -12,7 +12,6 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/project-members")
-@CrossOrigin(origins = "http://localhost:4300")
 public class ProjectMemberController {
 
     private final ProjectMemberService projectMemberService;

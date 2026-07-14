@@ -18,7 +18,6 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/reports")
-@CrossOrigin(origins = "http://localhost:4300")
 public class ReportController {
 
     private final ProjectRepository projectRepository;

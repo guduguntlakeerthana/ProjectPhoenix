@@ -15,7 +15,6 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/attachments")
-@CrossOrigin(origins = "http://localhost:4300")
 public class AttachmentController {
 
     private final AttachmentService attachmentService;

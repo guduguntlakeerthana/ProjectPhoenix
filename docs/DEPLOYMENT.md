@@ -32,7 +32,7 @@ Verify that Docker Desktop is installed and running on your target machine.
 
 When Docker Compose runs, the following ports are mapped on the local host machine:
 
-*   **Angular Client Web App**: `http://localhost:4300`
+*   **Angular Client Web App**: `http://localhost:4200`
 *   **Spring Boot REST API**: `http://localhost:9091`
 *   **PostgreSQL Engine**: `localhost:5432` (accessible via PgAdmin/DBeaver)
 

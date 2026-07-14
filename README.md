@@ -32,7 +32,7 @@ ProjectPhoenix/
 - **Framework**: Angular 21 (Standalone Architecture)
 - **Language**: TypeScript
 - **Styling**: Harmony-tailored Dark Mode CSS
-- **Server Port**: `4300`
+- **Server Port**: `4200`
 
 ---
 
@@ -72,7 +72,7 @@ cd frontend/devflow-frontend
 npm install
 npm run start
 ```
-Open your browser at [http://localhost:4300](http://localhost:4300).
+Open your browser at [http://localhost:4200](http://localhost:4200).
 
 ---
 
@@ -85,7 +85,7 @@ DevFlow AI can be fully orchestrated using Docker Compose. Make sure Docker Desk
    docker-compose up --build -d
    ```
 2. **Access Points**:
-   - Angular UI Frontend: [http://localhost:4300](http://localhost:4300)
+   - Angular UI Frontend: [http://localhost:4200](http://localhost:4200)
    - Spring Boot REST API: [http://localhost:9091](http://localhost:9091)
    - PostgreSQL Database: `localhost:5432` (database `devflowai`)
 

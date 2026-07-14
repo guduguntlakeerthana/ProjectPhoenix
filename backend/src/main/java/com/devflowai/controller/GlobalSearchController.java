@@ -8,7 +8,6 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/search")
-@CrossOrigin(origins = "http://localhost:4300")
 public class GlobalSearchController {
 
     private final GlobalSearchService globalSearchService;

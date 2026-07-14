@@ -18,6 +18,6 @@ DevFlow AI implements enterprise-level security designs to protect data integrit
 ---
 
 ## 3. Web Protections & CORS Configuration
-- **Cross-Origin Resource Sharing (CORS)**: Access is explicitly constrained. The Angular application origin `http://localhost:4300` is whitelisted with credential permissions enabled, preventing arbitrary wildcard cross-site calls.
+- **Cross-Origin Resource Sharing (CORS)**: Access is explicitly constrained. The Angular application origin `http://localhost:4200` is whitelisted with credential permissions enabled, preventing arbitrary wildcard cross-site calls.
 - **Cross-Site Scripting (XSS)**: Standalone Angular HTML templates bind variables dynamically using native sanitization pipelines to prevent malicious scripts from execution inside user views.
 - **CORS Pre-Flight**: Spring Security chain explicitly maps `OPTIONS` request methods to permit pre-flight handshakes from the frontend interceptor.

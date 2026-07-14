@@ -65,9 +65,9 @@ Modern developer tooling is scattered across multiple SaaS platforms (Jira for t
 - **Debugging & Resolution**: We audited both configuration files, restructured them into single clean JSON models, and combined `compilerOptions` like `rootDir` and `outDir` into correct objects. This resolved the compiler parsing errors instantly.
 
 ### Challenge 4: CORS / 403 Forbidden Handshake Failures
-- **The Issue**: Local browser requests from `localhost:4300` to `localhost:9091` were blocked by the browser.
+- **The Issue**: Local browser requests from `localhost:4200` to `localhost:9091` were blocked by the browser.
 - **Root Cause**: Missing Spring Security configuration mapping for pre-flight `OPTIONS` requests.
-- **Debugging & Resolution**: We configured a centralized `CorsConfig` bean mapping specific origin headers (`http://localhost:4300`), allowed HTTP methods (`GET, POST, PUT, DELETE, OPTIONS`), and enabled credentials. This was integrated into the Spring Security chain: `http.cors(cors -> {})`, resolving the pre-flight block.
+- **Debugging & Resolution**: We configured a centralized `CorsConfig` bean mapping specific origin headers (`http://localhost:4200`), allowed HTTP methods (`GET, POST, PUT, DELETE, OPTIONS`), and enabled credentials. This was integrated into the Spring Security chain: `http.cors(cors -> {})`, resolving the pre-flight block.
 
 ---
 
