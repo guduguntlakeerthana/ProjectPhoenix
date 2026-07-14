@@ -45,12 +45,14 @@ export interface ProjectStatsResponse {
   pendingProjects: number;
 }
 
+import { API_BASE_URL } from '../config/api.config';
+
 @Injectable({
   providedIn: 'root'
 })
 export class ProjectService {
 
-  private baseUrl = 'http://localhost:9091/api/projects';
+  private baseUrl = `${API_BASE_URL}/api/projects`;
 
   constructor(private http: HttpClient) {}
 

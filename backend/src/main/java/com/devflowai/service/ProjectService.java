@@ -13,11 +13,17 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.data.jpa.domain.Specification;
+import jakarta.persistence.criteria.Predicate;
+import java.util.ArrayList;
 
 import java.time.LocalDateTime;
 import java.util.List;
 
+import org.springframework.transaction.annotation.Transactional;
+
 @Service
+@Transactional
 public class ProjectService {
 
     @Autowired
@@ -101,15 +107,38 @@ public class ProjectService {
     ) {
         User user = getUserByEmail(email);
 
-        // Map client filter 'ALL' to null
         String statusFilter = (status == null || "ALL".equalsIgnoreCase(status)) ? null : status;
         String searchQuery = (search == null || search.trim().isEmpty()) ? null : search.trim();
 
-        // Sort configuration
-        Sort sort = Sort.by(Sort.Direction.fromString(direction), sortBy);
+        // Validate allowed sort fields: id, title, status, startDate, endDate, createdAt, updatedAt
+        List<String> allowedSortFields = List.of("id", "title", "status", "startDate", "endDate", "createdAt", "updatedAt");
+        String validatedSortBy = allowedSortFields.contains(sortBy) ? sortBy : "createdAt";
+
+        Sort sort = Sort.by(Sort.Direction.fromString(direction), validatedSortBy);
         Pageable pageable = PageRequest.of(page, size, sort);
 
-        return projectRepository.findByUserAndFilters(user, statusFilter, searchQuery, pageable)
+        Specification<Project> spec = (root, query, cb) -> {
+            List<Predicate> predicates = new ArrayList<>();
+
+            // User must own the project
+            predicates.add(cb.equal(root.get("user"), user));
+
+            if (statusFilter != null) {
+                predicates.add(cb.equal(root.get("status"), statusFilter));
+            }
+
+            if (searchQuery != null) {
+                String searchPattern = "%" + searchQuery.toLowerCase() + "%";
+                Predicate titlePred = cb.like(cb.lower(root.get("title")), searchPattern);
+                Predicate descPred = cb.like(cb.lower(root.get("description")), searchPattern);
+                Predicate techPred = cb.like(cb.lower(root.get("techStack")), searchPattern);
+                predicates.add(cb.or(titlePred, descPred, techPred));
+            }
+
+            return cb.and(predicates.toArray(new Predicate[0]));
+        };
+
+        return projectRepository.findAll(spec, pageable)
                 .map(this::mapToResponse);
     }
 

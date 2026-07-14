@@ -20,12 +20,14 @@ export interface DocResponse {
   updatedAt: string;
 }
 
+import { API_BASE_URL } from '../config/api.config';
+
 @Injectable({
   providedIn: 'root'
 })
 export class DocService {
 
-  private baseUrl = 'http://localhost:9091/api/docs';
+  private baseUrl = `${API_BASE_URL}/api/docs`;
 
   constructor(private http: HttpClient) {}
 

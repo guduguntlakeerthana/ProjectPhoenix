@@ -18,12 +18,14 @@ export interface NoteResponse {
   updatedAt: string;
 }
 
+import { API_BASE_URL } from '../config/api.config';
+
 @Injectable({
   providedIn: 'root'
 })
 export class NoteService {
 
-  private baseUrl = 'http://localhost:9091/api/notes';
+  private baseUrl = `${API_BASE_URL}/api/notes`;
 
   constructor(private http: HttpClient) {}
 
