@@ -12,4 +12,9 @@
   "exclude": [
     "src/**/*.spec.ts"
   ]
+  {
+  "compilerOptions": {
+    "rootDir": "./src"
+  }
 }
+
