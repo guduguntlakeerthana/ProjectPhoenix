@@ -13,12 +13,14 @@ export interface GlobalSearchResponse {
   docs: DocResponse[];
 }
 
+import { API_BASE_URL } from '../config/api.config';
+
 @Injectable({
   providedIn: 'root'
 })
 export class GlobalSearchService {
 
-  private baseUrl = 'http://localhost:9091/api/search';
+  private baseUrl = `${API_BASE_URL}/api/search`;
 
   constructor(private http: HttpClient) {}
 

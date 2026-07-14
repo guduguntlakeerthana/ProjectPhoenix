@@ -2,6 +2,8 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 
+import { API_BASE_URL } from '../config/api.config';
+
 export interface LoginRequest {
   email: string;
   password: string;
@@ -19,7 +21,7 @@ export interface LoginResponse {
 })
 export class AuthService {
 
-  private baseUrl = 'http://localhost:9091/api/auth';
+  private baseUrl = `${API_BASE_URL}/api/auth`;
 
   constructor(private http: HttpClient) {}
 
@@ -48,10 +50,10 @@ export class AuthService {
   }
 
   updateProfile(fullName: string): Observable<any> {
-    return this.http.put(`http://localhost:9091/api/users/profile`, { fullName });
+    return this.http.put(`${API_BASE_URL}/api/users/profile`, { fullName });
   }
 
   changePassword(data: any): Observable<any> {
-    return this.http.put(`http://localhost:9091/api/users/password`, data, { responseType: 'text' });
+    return this.http.put(`${API_BASE_URL}/api/users/password`, data, { responseType: 'text' });
   }
 }

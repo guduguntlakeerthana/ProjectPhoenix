@@ -9,12 +9,14 @@ export interface NotificationResponse {
   createdAt: string;
 }
 
+import { API_BASE_URL } from '../config/api.config';
+
 @Injectable({
   providedIn: 'root'
 })
 export class NotificationService {
 
-  private baseUrl = 'http://localhost:9091/api/notifications';
+  private baseUrl = `${API_BASE_URL}/api/notifications`;
 
   constructor(private http: HttpClient) {}
 

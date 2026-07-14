@@ -10,12 +10,14 @@ export interface AuditLogResponse {
   createdAt: string;
 }
 
+import { API_BASE_URL } from '../config/api.config';
+
 @Injectable({
   providedIn: 'root'
 })
 export class TimelineService {
 
-  private baseUrl = 'http://localhost:9091/api/audit-logs';
+  private baseUrl = `${API_BASE_URL}/api/audit-logs`;
 
   constructor(private http: HttpClient) {}
 

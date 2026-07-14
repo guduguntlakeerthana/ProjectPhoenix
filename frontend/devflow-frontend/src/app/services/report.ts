@@ -15,12 +15,14 @@ export interface ReportResponse {
   lowPriorityTasks: number;
 }
 
+import { API_BASE_URL } from '../config/api.config';
+
 @Injectable({
   providedIn: 'root'
 })
 export class ReportService {
 
-  private baseUrl = 'http://localhost:9091/api/reports';
+  private baseUrl = `${API_BASE_URL}/api/reports`;
 
   constructor(private http: HttpClient) {}
 

@@ -23,12 +23,14 @@ export interface AnalyticsResponse {
   recentTasks: TaskResponse[];
 }
 
+import { API_BASE_URL } from '../config/api.config';
+
 @Injectable({
   providedIn: 'root'
 })
 export class AnalyticsService {
 
-  private baseUrl = 'http://localhost:9091/api/analytics';
+  private baseUrl = `${API_BASE_URL}/api/analytics`;
 
   constructor(private http: HttpClient) {}
 

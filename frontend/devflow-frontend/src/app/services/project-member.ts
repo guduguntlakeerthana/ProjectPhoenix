@@ -17,12 +17,14 @@ export interface ProjectMemberResponse {
   invitedAt: string;
 }
 
+import { API_BASE_URL } from '../config/api.config';
+
 @Injectable({
   providedIn: 'root'
 })
 export class ProjectMemberService {
 
-  private baseUrl = 'http://localhost:9091/api/project-members';
+  private baseUrl = `${API_BASE_URL}/api/project-members`;
 
   constructor(private http: HttpClient) {}
 

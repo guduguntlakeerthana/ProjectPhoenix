@@ -36,3 +36,14 @@ All notable changes to this project will be documented in this file.
 - Implemented Task REST API endpoints (`POST`, `GET`, `PUT`, `DELETE`).
 - Built a developer-themed Task Board listing, editing, and deleting sprint tasks.
 - Added client-side Signal filters for status, priority, and project scope.
+
+## [1.3.0] - 2026-07-14
+### Fixed
+- Fixed PostgreSQL search parameters crash (`lower(bytea) does not exist`) by refactoring filtering logic into dynamic, null-safe Spring Data JPA Specifications.
+- Fixed backend JWT request crashes on malformed, expired, or signature mismatch tokens by wrapping parsing in a secure try-catch filter boundary.
+- Fixed TypeScript compiler JSON errors by merging fragmented configurations in `tsconfig.app.json` and `tsconfig.spec.json`.
+- Restored database transactional stability under `open-in-view=false` by annotating service layers with `@Transactional`.
+
+### Added
+- Created centralized dynamic frontend API URL configuration.
+- Completed comprehensive architectural, API schema, database design, and interview guides under `docs/`.

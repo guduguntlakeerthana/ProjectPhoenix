@@ -12,12 +12,14 @@ export interface AttachmentResponse {
   createdAt: string;
 }
 
+import { API_BASE_URL } from '../config/api.config';
+
 @Injectable({
   providedIn: 'root'
 })
 export class AttachmentService {
 
-  private baseUrl = 'http://localhost:9091/api/attachments';
+  private baseUrl = `${API_BASE_URL}/api/attachments`;
 
   constructor(private http: HttpClient) {}
 
